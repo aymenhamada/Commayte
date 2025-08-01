@@ -1,0 +1,33 @@
+title: Commayte
+description: AI-powered git commit message generator with beautiful interactive CLI
+url: "https://aymenhamada.github.io"
+baseurl: "/Commayte"
+
+# Build settings
+theme: jekyll-theme-minimal
+plugins:
+  - jekyll-seo-tag
+
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /:collection/:name/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "docs"
+    values:
+      layout: "default"
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/ 

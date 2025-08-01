@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commayte - AI-Powered Git Commit Message Generator</title>
+    <meta name="description" content="Generate intelligent, conventional commit messages with AI. Beautiful interactive CLI with Mistral model support.">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <div class="badge-logo">
+                    <div class="prompt-icon" style="font-size: 16px;">></div>
+                    <div class="badge-text">
+                        <span class="comma">Comma</span>yte
+                    </div>
+                    <div class="ai-indicator"></div>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#installation">Install</a>
+                <a href="#usage">Usage</a>
+                <a href="https://github.com/aymenhamada/Commayte" target="_blank">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Generate Intelligent
+                    <span class="gradient-text">Commit Messages</span>
+                </h1>
+                <p class="hero-description">
+                    Transform your Git workflow with AI-generated conventional commit messages. 
+                    Beautiful interactive CLI powered by Mistral model.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#installation" class="btn btn-primary">
+                        <i class="fas fa-download"></i>
+                        Install Now
+                    </a>
+                    <a href="https://github.com/aymenhamada/Commayte" target="_blank" class="btn btn-secondary">
+                        <i class="fab fa-github"></i>
+                        View on GitHub
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">🚀</span>
+                        <span class="stat-label">One-line install</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">🤖</span>
+                        <span class="stat-label">AI-powered</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">🎨</span>
+                        <span class="stat-label">Beautiful UI</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="terminal-demo">
+                    <div class="terminal-header">
+                        <div class="terminal-buttons">
+                            <span class="terminal-btn red"></span>
+                            <span class="terminal-btn yellow"></span>
+                            <span class="terminal-btn green"></span>
+                        </div>
+                        <span class="terminal-title">commayte</span>
+                    </div>
+                    <div class="terminal-content">
+                        <div class="terminal-line">
+                            <span class="prompt">$</span>
+                            <span class="command">commayte</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="output">🔍 Analyzing git changes...</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="output">📝 Generated commit message:</span>
+                        </div>
+                        <div class="terminal-line highlight">
+                            <span class="commit-message">feat(client): add user authentication system</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="output">What would you like to do?</span>
+                        </div>
+                        <div class="terminal-line">
+                            <span class="options">✅ Accept  🔄 Regenerate  ❌ Cancel</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Why Choose Commayte?</h2>
+                <p>Everything you need for intelligent commit message generation</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI-Powered</h3>
+                    <p>Uses Mistral model to analyze your code changes and generate intelligent, context-aware commit messages.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3>Conventional Commits</h3>
+                    <p>Follows the conventional commit specification with proper type, scope, and description formatting.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mouse-pointer"></i>
+                    </div>
+                    <h3>Interactive CLI</h3>
+                    <p>Beautiful terminal interface with spinners, colors, and interactive prompts for the best user experience.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h3>Regenerate & Refine</h3>
+                    <p>Not satisfied? Regenerate the commit message until you get exactly what you want.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Zero Setup</h3>
+                    <p>One-line installation that automatically sets up Ollama and downloads the Mistral model.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Local & Private</h3>
+                    <p>Everything runs locally on your machine. No data sent to external services.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section id="installation" class="installation">
+        <div class="container">
+            <div class="section-header">
+                <h2>Get Started in Seconds</h2>
+                <p>One command to install everything you need</p>
+            </div>
+            <div class="install-card">
+                <div class="install-header">
+                    <div class="badge-logo">
+                        <div class="prompt-icon" style="font-size: 16px;">></div>
+                        <div class="badge-text">
+                            <span class="comma">Comma</span>yte
+                        </div>
+                        <div class="ai-indicator"></div>
+                    </div>
+                    <span>Quick Install</span>
+                </div>
+                <div class="install-code">
+                    <code>curl -fsSL https://github.com/aymenhamada/Commayte/releases/latest/download/install.sh | bash</code>
+                    <button class="copy-btn" onclick="copyToClipboard(this)">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                <div class="install-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Check Prerequisites</h4>
+                            <p>Verifies Git and curl are installed</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Install Ollama</h4>
+                            <p>Downloads and installs Ollama locally</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Download Mistral</h4>
+                            <p>Downloads the Mistral AI model</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Install Commayte</h4>
+                            <p>Downloads and installs the binary</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Usage Section -->
+    <section id="usage" class="usage">
+        <div class="container">
+            <div class="section-header">
+                <h2>How to Use</h2>
+                <p>Simple and intuitive workflow</p>
+            </div>
+            <div class="usage-steps">
+                <div class="usage-step">
+                    <div class="step-visual">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <h3>1. Stage Your Changes</h3>
+                    <p>Stage the files you want to commit</p>
+                    <div class="code-block">
+                        <code>git add .</code>
+                    </div>
+                </div>
+                <div class="usage-step">
+                    <div class="step-visual">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <h3>2. Generate Message</h3>
+                    <p>Run Commayte to generate a commit message</p>
+                    <div class="code-block">
+                        <code>commayte</code>
+                    </div>
+                </div>
+                <div class="usage-step">
+                    <div class="step-visual">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h3>3. Choose Action</h3>
+                    <p>Accept, regenerate, or cancel the message</p>
+                    <div class="code-block">
+                        <code>✅ Accept  🔄 Regenerate  ❌ Cancel</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                                    <div class="footer-logo">
+                    <div class="badge-logo">
+                        <div class="prompt-icon" style="font-size: 16px;">></div>
+                        <div class="badge-text">
+                            <span class="comma">Comma</span>yte
+                        </div>
+                        <div class="ai-indicator"></div>
+                    </div>
+                    <div class="tagline">AI-powered Git commit messages</div>
+                </div>
+                    <p>AI-powered git commit message generator with beautiful interactive CLI.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Links</h4>
+                    <a href="https://github.com/aymenhamada/Commayte" target="_blank">GitHub</a>
+                    <a href="https://github.com/aymenhamada/Commayte/releases" target="_blank">Releases</a>
+                    <a href="https://github.com/aymenhamada/Commayte/issues" target="_blank">Issues</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <a href="https://www.conventionalcommits.org/" target="_blank">Conventional Commits</a>
+                    <a href="https://ollama.ai/" target="_blank">Ollama</a>
+                    <a href="https://mistral.ai/" target="_blank">Mistral AI</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Commayte. Made with ❤️ by <a href="https://github.com/aymenhamada" target="_blank">Aymen Hamada</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html> 
