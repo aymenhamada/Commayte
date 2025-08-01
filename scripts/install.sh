@@ -145,26 +145,40 @@ if [ -z "$LATEST_RELEASE" ]; then
     exit 1
 fi
 
-DOWNLOAD_URL="https://github.com/$REPO/releases/download/$LATEST_RELEASE/$BINARY"
+# Download the tar.gz file and extract the correct binary
+TAR_URL="https://github.com/$REPO/releases/download/$LATEST_RELEASE/commayte-$LATEST_RELEASE.tar.gz"
 
-echo -e "${YELLOW}📥 Downloading from: $DOWNLOAD_URL${NC}"
+echo -e "${YELLOW}📥 Downloading release archive...${NC}"
 
-# Download the binary with error handling
-if ! curl -L -o "/tmp/$BINARY" "$DOWNLOAD_URL"; then
-    echo -e "${RED}❌ Failed to download binary${NC}"
+# Download the tar.gz file
+if ! curl -L -o "/tmp/commayte-$LATEST_RELEASE.tar.gz" "$TAR_URL"; then
+    echo -e "${RED}❌ Failed to download release archive${NC}"
     echo -e "${YELLOW}💡 Check your internet connection and try again${NC}"
     exit 1
 fi
 
-chmod +x "/tmp/$BINARY"
+# Extract the correct binary
+echo -e "${YELLOW}📦 Extracting binary...${NC}"
+cd /tmp
+tar -xzf "commayte-$LATEST_RELEASE.tar.gz" "$BINARY/$BINARY"
+
+if [ ! -f "/tmp/$BINARY/$BINARY" ]; then
+    echo -e "${RED}❌ Failed to extract binary $BINARY/$BINARY${NC}"
+    echo -e "${YELLOW}💡 Available binaries in archive:${NC}"
+    tar -tzf "commayte-$LATEST_RELEASE.tar.gz" | grep commayte
+    exit 1
+fi
+
+chmod +x "/tmp/$BINARY/$BINARY"
 
 # Install to /usr/local/bin (requires sudo)
 echo -e "${YELLOW}🔧 Installing to /usr/local/bin/commayte...${NC}"
-sudo cp "/tmp/$BINARY" /usr/local/bin/commayte
+sudo cp "/tmp/$BINARY/$BINARY" /usr/local/bin/commayte
 sudo chmod +x /usr/local/bin/commayte
 
 # Clean up
-rm "/tmp/$BINARY"
+rm -rf "/tmp/$BINARY"
+rm "/tmp/commayte-$LATEST_RELEASE.tar.gz"
 
 echo -e "${GREEN}✅ Commayte installed successfully!${NC}"
 
