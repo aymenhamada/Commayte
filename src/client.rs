@@ -1,9 +1,9 @@
-use std::process::Command;
+use std::{process::Command, time::Duration};
 use anyhow::Result;
 use reqwest::blocking::Client;
 use spinners::{Spinner, Spinners};
 use dialoguer::{theme::ColorfulTheme, Select};
-use std::io::{self, Write};
+use std::io::{self, Write, BufRead, stdin, stdout, Read};
 use colored::*;
 use console::style;
 
@@ -170,6 +170,7 @@ fn generate_commit_message(prompt: &str) -> Result<String> {
             "max_tokens": 100,
             "stream": false
         }))
+        .timeout(Duration::from_secs(45))
         .send()?;
 
     let json: serde_json::Value = response.json()?;
@@ -187,6 +188,27 @@ fn print_header(title: &str) {
         "".bold().yellow(),
         style(title).bold().cyan()
     );
+}
+
+fn edit_in_terminal(initial_text: &str) -> Result<String> {
+    // For now, let's use a simpler approach that's more reliable
+    // Show the current message and let user type a new one
+    // This is more reliable than trying to implement complex terminal editing
+    println!();
+    println!("{}", "Current message:".dimmed());
+    println!("{}", initial_text.bold().white());
+    println!();
+    println!("{}", "Type the new message (or press Enter to keep current):".yellow());
+    
+    let mut input = String::new();
+    stdin().lock().read_line(&mut input)?;
+    
+    let edited = input.trim();
+    if edited.is_empty() {
+        Ok(initial_text.to_string())
+    } else {
+        Ok(edited.to_string())
+    }
 }
 
 pub fn run() -> Result<()> {
@@ -234,57 +256,92 @@ pub fn run() -> Result<()> {
         println!("📝 {} {}", "Generated commit message:".bold().green(), clean_msg.bold().white());
         println!();
 
-        let options = vec!["✅ Accept and commit", "🔄 Regenerate message", "❌ Cancel"];
+        let options = vec!["✅ Accept and commit", "✏️ Edit message", "🔄 Regenerate message", "❌ Cancel"];
         let selection = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("What would you like to do?")
             .items(&options)
             .default(0)
             .interact()?;
 
-        match selection {
-            0 => {
+        let final_message = match selection {
+            0 => clean_msg,
+            1 => {
                 clear_terminal();
                 print_header("> Commayte");
-
-                let mut commit_sp = Spinner::new(Spinners::Dots9, "Committing changes...".into());
-
-                let commit_result = Command::new("git")
-                    .args(["commit", "-am", &clean_msg])
-                    .stdout(std::process::Stdio::null())
-                    .stderr(std::process::Stdio::null())
-                    .status();
-
-                commit_sp.stop();
+                
+                // Use custom in-terminal editing
+                let edited_msg = edit_in_terminal(&clean_msg)?;
+                
+                let cleaned_edited_msg = clean_commit_message(&edited_msg);
+                
                 clear_terminal();
                 print_header("> Commayte");
-
-                match commit_result {
-                    Ok(status) if status.success() => {
-                        println!("{}", "✅ Commit successful!".bold().green());
-                        println!("📄 Message: {}", clean_msg.white());
-                        break;
+                
+                println!("📝 {} {}", "Edited commit message:".bold().green(), cleaned_edited_msg.bold().white());
+                println!();
+                
+                let confirm_options = vec!["✅ Use this message", "✏️ Edit again", "❌ Cancel"];
+                let confirm_selection = Select::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Confirm the edited message")
+                    .items(&confirm_options)
+                    .default(0)
+                    .interact()?;
+                
+                match confirm_selection {
+                    0 => cleaned_edited_msg,
+                    1 => continue, // This will restart the edit loop
+                    2 => {
+                        clear_terminal();
+                        print_header("> Commayte");
+                        println!("{}", "❌ Cancelled by user".red());
+                        return Ok(());
                     }
-                    Ok(status) => {
-                        println!("{}", "⚠️ Commit completed with warnings.".yellow());
-                        println!("📄 Message: {}", clean_msg.white());
-                        println!("🔍 Exit code: {}", status.code().unwrap_or(-1));
-                        break;
-                    }
-                    Err(_) => {
-                        println!("{}", "❌ Git commit failed.".bold().red());
-                        println!("📄 Message: {}", clean_msg.white());
-                        break;
-                    }
+                    _ => unreachable!(),
                 }
             }
-            1 => continue,
-            2 => {
+            2 => continue, // Regenerate message
+            3 => {
                 clear_terminal();
                 print_header("> Commayte");
                 println!("{}", "❌ Cancelled by user".red());
-                break;
+                return Ok(());
             }
             _ => unreachable!(),
+        };
+
+        // Commit with the final message (either original, edited, or regenerated)
+        clear_terminal();
+        print_header("> Commayte");
+
+        let mut commit_sp = Spinner::new(Spinners::Dots9, "Committing changes...".into());
+
+        let commit_result = Command::new("git")
+            .args(["commit", "-am", &final_message])
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .status();
+
+        commit_sp.stop();
+        clear_terminal();
+        print_header("> Commayte");
+
+        match commit_result {
+            Ok(status) if status.success() => {
+                println!("{}", "✅ Commit successful!".bold().green());
+                println!("📄 Message: {}", final_message.white());
+                break;
+            }
+            Ok(status) => {
+                println!("{}", "⚠️ Commit completed with warnings.".yellow());
+                println!("📄 Message: {}", final_message.white());
+                println!("🔍 Exit code: {}", status.code().unwrap_or(-1));
+                break;
+            }
+            Err(_) => {
+                println!("{}", "❌ Git commit failed.".bold().red());
+                println!("📄 Message: {}", final_message.white());
+                break;
+            }
         }
     }
 
