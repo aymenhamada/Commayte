@@ -229,7 +229,7 @@ pub fn run() -> Result<()> {
         sp.stop();
 
         clear_terminal();
-        print_header("Git Commit Bot");
+        print_header("> Commayte");
 
         println!("📝 {} {}", "Generated commit message:".bold().green(), clean_msg.bold().white());
         println!();
@@ -244,7 +244,7 @@ pub fn run() -> Result<()> {
         match selection {
             0 => {
                 clear_terminal();
-                print_header("Git Commit Bot");
+                print_header("> Commayte");
 
                 let mut commit_sp = Spinner::new(Spinners::Dots9, "Committing changes...".into());
 
@@ -256,7 +256,7 @@ pub fn run() -> Result<()> {
 
                 commit_sp.stop();
                 clear_terminal();
-                print_header("Git Commit Bot");
+                print_header("> Commayte");
 
                 match commit_result {
                     Ok(status) if status.success() => {
@@ -280,7 +280,7 @@ pub fn run() -> Result<()> {
             1 => continue,
             2 => {
                 clear_terminal();
-                print_header("Git Commit Bot");
+                print_header("> Commayte");
                 println!("{}", "❌ Cancelled by user".red());
                 break;
             }
