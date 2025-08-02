@@ -212,18 +212,37 @@ fi
 # Create configuration directory
 mkdir -p ~/.config/commayte
 
-# Create a simple configuration file
+# Create configuration with interactive setup
+echo -e "${YELLOW}⚙️  Setting up configuration...${NC}"
+
+# Ask user for model preference
+echo -e "${BLUE}🤖 Available models:${NC}"
+echo -e "  1. mistral (default - good balance of speed and quality)"
+echo -e "  2. phi3:mini (fast and efficient, good for code)"
+
+read -p "Choose model (1-2) [1]: " model_choice
+
+case $model_choice in
+    1|"")
+        MODEL="mistral"
+        ;;
+    2)
+        MODEL="phi3:mini"
+        ;;
+    *)
+        MODEL="mistral"
+        ;;
+esac
+
+# Create the configuration file
 cat > ~/.config/commayte/config.toml << EOF
 # Commayte Configuration
-[ollama]
-url = "http://localhost:11434"
-model = "mistral"
-
-[git]
-auto_stage = false
+model = "$MODEL"
 EOF
 
 echo -e "${GREEN}✅ Configuration created at ~/.config/commayte/config.toml${NC}"
+echo -e "${BLUE}📋 Current settings:${NC}"
+echo -e "  Model: $MODEL"
 
 # Test the installation
 echo -e "${YELLOW}🧪 Testing installation...${NC}"

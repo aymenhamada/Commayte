@@ -22,6 +22,8 @@ dialoguer = "0.11"             # For interactive prompts and confirmations
 colored = "2.0"                # For colored terminal output
 console = "0.15"               # For terminal styling
 crossterm = "0.27"             # For terminal control and cursor manipulation
+toml = "0.8"                   # For configuration file format
+dirs = "5.0"                   # For finding config directories
 
 [profile.release]
 opt-level = 3
