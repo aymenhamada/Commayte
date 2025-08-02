@@ -95,33 +95,94 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(el);
     });
     
-    // Terminal typing effect
-    const terminalLines = document.querySelectorAll('.terminal-line');
-    let currentLine = 0;
-    
-    function typeWriter() {
-        if (currentLine < terminalLines.length) {
-            const line = terminalLines[currentLine];
-            const text = line.textContent;
-            line.textContent = '';
-            line.style.opacity = '1';
-            
-            let i = 0;
-            const typeInterval = setInterval(() => {
-                if (i < text.length) {
-                    line.textContent += text.charAt(i);
-                    i++;
+    // Terminal animation sequence
+    function startTerminalAnimation() {
+        const terminalLines = document.querySelectorAll('.terminal-line');
+        let currentStep = 1;
+        
+        function showStep(step) {
+            const line = document.querySelector(`[data-step="${step}"]`);
+            if (line) {
+                line.classList.remove('hidden');
+                
+                // If it's a typing text element, animate the typing
+                const typingElement = line.querySelector('.typing-text');
+                if (typingElement) {
+                    const text = typingElement.getAttribute('data-text');
+                    typingElement.textContent = '';
+                    
+                    let charIndex = 0;
+                    const typeInterval = setInterval(() => {
+                        if (charIndex < text.length) {
+                            typingElement.textContent += text.charAt(charIndex);
+                            charIndex++;
+                        } else {
+                            clearInterval(typeInterval);
+                            // Remove cursor after typing is complete
+                            setTimeout(() => {
+                                typingElement.style.setProperty('--cursor-opacity', '0');
+                            }, 500);
+                            
+                            // Move to next step
+                            setTimeout(() => {
+                                currentStep++;
+                                if (currentStep <= 7) {
+                                    showStep(currentStep);
+                                }
+                            }, 800);
+                        }
+                    }, 100);
                 } else {
-                    clearInterval(typeInterval);
-                    currentLine++;
-                    setTimeout(typeWriter, 500);
+                    // For non-typing elements, just wait and move to next step
+                    // Special handling for commit message (step 4) - shorter delay since it appears instantly
+                    const delay = step === 4 ? 600 : 1000;
+                    setTimeout(() => {
+                        currentStep++;
+                        if (currentStep <= 7) {
+                            showStep(currentStep);
+                        }
+                    }, delay);
                 }
-            }, 50);
+            }
         }
+        
+        // Start the animation sequence
+        setTimeout(() => {
+            showStep(1);
+        }, 1500);
     }
     
-    // Start typing effect when page loads
-    setTimeout(typeWriter, 1000);
+    // Start terminal animation when page loads
+    startTerminalAnimation();
+    
+    // Add cursor movement animation after options appear
+    setTimeout(() => {
+        const optionLines = document.querySelectorAll('.option-line');
+        let currentOption = 0;
+        
+        function moveCursor() {
+            // Remove previous selection
+            optionLines.forEach(line => {
+                line.classList.remove('selected');
+                line.innerHTML = line.innerHTML.replace('❯', ' ');
+            });
+            
+            // Add selection to current option
+            if (optionLines[currentOption]) {
+                optionLines[currentOption].classList.add('selected');
+                optionLines[currentOption].innerHTML = '❯' + optionLines[currentOption].innerHTML.substring(1);
+            }
+            
+            // Move to next option
+            currentOption = (currentOption + 1) % optionLines.length;
+            
+            // Continue animation
+            setTimeout(moveCursor, 1500);
+        }
+        
+        // Start cursor movement after options are fully visible
+        setTimeout(moveCursor, 2000);
+    }, 8000); // Wait for all steps to complete
     
     // Add hover effects to feature cards
     const featureCards = document.querySelectorAll('.feature-card');

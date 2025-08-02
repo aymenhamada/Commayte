@@ -241,6 +241,41 @@ body {
 
 .terminal-line {
     margin-bottom: 0.5rem;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.terminal-line.hidden {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.typing-text {
+    position: relative;
+    overflow: hidden;
+}
+
+.typing-text::after {
+    content: '';
+    position: absolute;
+    right: -2px;
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background: #50fa7b;
+    animation: blink 1s infinite;
+    opacity: var(--cursor-opacity, 1);
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+@keyframes typewriter {
+    from { width: 0; }
+    to { width: 100%; }
 }
 
 .prompt {
@@ -270,6 +305,21 @@ body {
 
 .options {
     color: #ff79c6;
+}
+
+.option-line {
+    margin: 0.2rem 0;
+    transition: all 0.3s ease;
+}
+
+.option-line.selected {
+    color: #50fa7b;
+    font-weight: 600;
+}
+
+.option-line .cursor {
+    color: #50fa7b;
+    animation: blink 1s infinite;
 }
 
 /* Features Section */

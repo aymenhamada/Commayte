@@ -89,14 +89,34 @@ else
     done
 fi
 
-# Download Mistral model
-echo -e "${YELLOW}📥 Downloading Mistral model...${NC}"
-if curl -s http://localhost:11434/api/tags | grep -q mistral; then
-    echo -e "${GREEN}✅ Mistral model is already downloaded${NC}"
+# Ask user for model preference early
+echo -e "${YELLOW}⚙️  Model Selection${NC}"
+echo -e "${BLUE}🤖 Available models:${NC}"
+echo -e "  1. mistral (default - good balance of speed and quality)"
+echo -e "  2. phi3:mini (fast and efficient)"
+
+read -p "Choose model (1-2) [1]: " model_choice
+
+case $model_choice in
+    1|"")
+        MODEL="mistral"
+        ;;
+    2)
+        MODEL="phi3:mini"
+        ;;
+    *)
+        MODEL="mistral"
+        ;;
+esac
+
+# Download selected model
+echo -e "${YELLOW}📥 Downloading $MODEL model...${NC}"
+if curl -s http://localhost:11434/api/tags | grep -q "$MODEL"; then
+    echo -e "${GREEN}✅ $MODEL model is already downloaded${NC}"
 else
     echo -e "${YELLOW}⏳ This may take a few minutes...${NC}"
     # Download with a clean progress indicator
-    curl -X POST http://localhost:11434/api/pull -d '{"name": "mistral"}' -s 2>/dev/null | while IFS= read -r line; do
+    curl -X POST http://localhost:11434/api/pull -d "{\"name\": \"$MODEL\"}" -s 2>/dev/null | while IFS= read -r line; do
         # Parse JSON and show progress
         if echo "$line" | grep -q '"status":"pulling"'; then
             # Extract progress information
@@ -107,13 +127,14 @@ else
                 # Calculate percentage
                 percent=$((completed * 100 / total))
                 # Show progress bar
-                printf "\r   Downloading: [%-50s] %d%%" $(printf "#%.0s" $(seq 1 $((percent/2)))) $percent
+                printf "\r   Downloading $MODEL: [%-50s] %d%%" $(printf "#%.0s" $(seq 1 $((percent/2)))) $percent
             fi
         fi
     done
     echo ""
-    echo -e "${GREEN}✅ Mistral model downloaded successfully${NC}"
+    echo -e "${GREEN}✅ $MODEL model downloaded successfully${NC}"
 fi
+
 
 # Download Commayte binary
 echo -e "${YELLOW}📦 Downloading Commayte binary...${NC}"
@@ -212,27 +233,8 @@ fi
 # Create configuration directory
 mkdir -p ~/.config/commayte
 
-# Create configuration with interactive setup
+# Create configuration
 echo -e "${YELLOW}⚙️  Setting up configuration...${NC}"
-
-# Ask user for model preference
-echo -e "${BLUE}🤖 Available models:${NC}"
-echo -e "  1. mistral (default - good balance of speed and quality)"
-echo -e "  2. phi3:mini (fast and efficient, good for code)"
-
-read -p "Choose model (1-2) [1]: " model_choice
-
-case $model_choice in
-    1|"")
-        MODEL="mistral"
-        ;;
-    2)
-        MODEL="phi3:mini"
-        ;;
-    *)
-        MODEL="mistral"
-        ;;
-esac
 
 # Create the configuration file
 cat > ~/.config/commayte/config.toml << EOF
@@ -243,6 +245,21 @@ EOF
 echo -e "${GREEN}✅ Configuration created at ~/.config/commayte/config.toml${NC}"
 echo -e "${BLUE}📋 Current settings:${NC}"
 echo -e "  Model: $MODEL"
+
+# Pre-load the model for faster first use
+echo -e "${YELLOW}🚀 Pre-loading $MODEL model for faster first use...${NC}"
+echo -e "${YELLOW}⏳ This may take a moment...${NC}"
+
+# Send a simple request to load the model into memory
+curl -X POST http://localhost:11434/api/generate \
+    -H "Content-Type: application/json" \
+    -d "{\"model\": \"$MODEL\", \"prompt\": \"hello\", \"stream\": false}" > /dev/null 2>&1
+
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✅ $MODEL model pre-loaded successfully${NC}"
+else
+    echo -e "${YELLOW}⚠️  Model pre-loading failed, but this won't affect functionality${NC}"
+fi
 
 # Test the installation
 echo -e "${YELLOW}🧪 Testing installation...${NC}"

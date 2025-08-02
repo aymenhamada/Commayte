@@ -25,7 +25,7 @@ struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            model: "mistral".to_string(),
+            model: "phi3:mini".to_string(),
         }
     }
 }
@@ -270,7 +270,8 @@ fn clear_terminal() {
 }
 
 fn print_header(title: &str) {
-    println!("{} {}\n", "".bold().yellow(), style(title).bold().cyan());
+    let config = load_config();
+    println!("{} {} (using {})\n", "".bold().yellow(), style(title).bold().cyan(), config.model.bold().white());
 }
 
 fn edit_in_terminal(initial_text: &str) -> Result<String> {

@@ -82,24 +82,29 @@
                         <span class="terminal-title">commayte</span>
                     </div>
                     <div class="terminal-content">
-                        <div class="terminal-line">
+                        <div class="terminal-line" data-step="1">
                             <span class="prompt">$</span>
-                            <span class="command">commayte</span>
+                            <span class="command typing-text" data-text="commayte"></span>
                         </div>
-                        <div class="terminal-line">
+                        <div class="terminal-line hidden" data-step="2">
                             <span class="output">🔍 Analyzing git changes...</span>
                         </div>
-                        <div class="terminal-line">
+                        <div class="terminal-line hidden" data-step="3">
                             <span class="output">📝 Generated commit message:</span>
                         </div>
-                        <div class="terminal-line highlight">
+                        <div class="terminal-line highlight hidden" data-step="4">
                             <span class="commit-message">feat(client): add user authentication system</span>
                         </div>
-                        <div class="terminal-line">
+                        <div class="terminal-line hidden" data-step="5">
                             <span class="output">What would you like to do?</span>
                         </div>
-                        <div class="terminal-line">
-                            <span class="options">✅ Accept  🔄 Regenerate  ❌ Cancel</span>
+                        <div class="terminal-line hidden" data-step="6">
+                            <span class="options">
+                                <div class="option-line" data-option="0">❯ ✅ Accept and commit</div>
+                                <div class="option-line" data-option="1">  ✏️ Edit message</div>
+                                <div class="option-line" data-option="2">  🔄 Regenerate message</div>
+                                <div class="option-line" data-option="3">  ❌ Cancel</div>
+                            </span>
                         </div>
                     </div>
                 </div>
