@@ -25,9 +25,33 @@ curl -fsSL https://github.com/aymenhamada/Commayte/releases/latest/download/inst
 That's it! The installer will:
 - ✅ Check prerequisites (Git, curl)
 - 📦 Install Ollama locally
-- 📥 Download Mistral model
+- 🤖 **Interactive model selection** (Mistral or Phi3:mini)
+- 📥 Download your chosen model
 - 📦 Install Commayte binary
 - ⚙️ Configure everything automatically
+
+### Model Selection
+
+The installer runs in **interactive mode** to let you choose your preferred AI model:
+- **Mistral** (default): Good balance of speed and quality
+- **Phi3:mini**: Fast and efficient
+
+### Manual Configuration
+
+If you prefer a different model or want to change later, you can manually edit the configuration:
+
+```bash
+# Edit the config file
+nano ~/.config/commayte/config.toml
+
+# Change the model property
+model = "your-preferred-model"
+```
+
+Then download your chosen model:
+```bash
+ollama pull your-preferred-model
+```
 
 ## 📖 Usage
 

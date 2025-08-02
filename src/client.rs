@@ -8,6 +8,9 @@ use crate::prompts;
 use crate::terminal;
 
 pub fn run() -> Result<()> {
+    // Debug config path if needed (uncomment to debug)
+    // crate::config::debug_config_path();
+    
     terminal::clear_terminal();
 
     let diff = git::get_git_diff();

@@ -16,27 +16,35 @@ impl Default for Config {
 }
 
 fn get_config_path() -> PathBuf {
-    let config_dir = dirs::config_dir()
-        .unwrap_or_else(|| PathBuf::from("."))
-        .join("commayte");
-
-    // Create config directory if it doesn't exist
-    if !config_dir.exists() {
-        let _ = fs::create_dir_all(&config_dir);
-    }
-
-    config_dir.join("config.toml")
+    dirs::config_dir()
+        .unwrap_or_else(|| {
+            dirs::home_dir()
+                .unwrap_or_else(|| PathBuf::from("."))
+                .join(".config")
+        })
+        .join("commayte")
+        .join("config.toml")
 }
 
 pub fn load_config() -> Config {
     let config_path = get_config_path();
 
-    if let Ok(config_content) = fs::read_to_string(&config_path) {
-        if let Ok(config) = toml::from_str(&config_content) {
-            return config;
+    match fs::read_to_string(&config_path) {
+        Ok(config_content) => match toml::from_str(&config_content) {
+            Ok(config) => config,
+            Err(e) => {
+                eprintln!("Warning: Failed to parse config file: {}", e);
+                eprintln!("Using default configuration");
+                Config::default()
+            }
+        },
+        Err(e) => {
+            eprintln!(
+                "Warning: Could not read config file at {:?}: {}",
+                config_path, e
+            );
+            eprintln!("Using default configuration");
+            Config::default()
         }
     }
-
-    // Return default config if file doesn't exist or is invalid
-    Config::default()
 }

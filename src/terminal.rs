@@ -74,9 +74,13 @@ pub fn edit_in_terminal(initial_text: &str) -> Result<String> {
                         // Move cursor back
                         execute!(stdout(), cursor::MoveLeft(1))?;
 
-                        // Clear the character
-                        execute!(stdout(), Print(" "))?;
-                        execute!(stdout(), cursor::MoveLeft(1))?;
+                        // Redraw the rest of the text from cursor position
+                        let remaining_text = &current_text[cursor_pos..];
+                        execute!(stdout(), Print(remaining_text))?;
+                        execute!(stdout(), Print(" "))?; // Clear the last character
+                        
+                        // Move cursor back to the correct position
+                        execute!(stdout(), cursor::MoveLeft((remaining_text.len() + 1) as u16))?;
                     }
                 }
                 KeyCode::Char(c) => {
@@ -84,6 +88,15 @@ pub fn edit_in_terminal(initial_text: &str) -> Result<String> {
                     current_text.insert(cursor_pos, c);
                     cursor_pos += 1;
                     execute!(stdout(), Print(c))?;
+                    
+                    // Redraw the rest of the text from the new cursor position
+                    let remaining_text = &current_text[cursor_pos..];
+                    execute!(stdout(), Print(remaining_text))?;
+                    
+                    // Move cursor back to the correct position (after the inserted character)
+                    if !remaining_text.is_empty() {
+                        execute!(stdout(), cursor::MoveLeft(remaining_text.len() as u16))?;
+                    }
                 }
                 KeyCode::Left => {
                     if cursor_pos > 0 {

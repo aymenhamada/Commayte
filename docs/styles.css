@@ -489,6 +489,36 @@ body {
     font-size: 0.875rem;
 }
 
+.install-note {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-radius: 12px;
+    border-left: 4px solid #0ea5e9;
+}
+
+.install-note h4 {
+    color: #0c4a6e;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.install-note p {
+    color: #0369a1;
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.install-note code {
+    background: rgba(14, 165, 233, 0.1);
+    color: #0c4a6e;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.8rem;
+}
+
 /* Usage Section */
 .usage {
     padding: 80px 0;
