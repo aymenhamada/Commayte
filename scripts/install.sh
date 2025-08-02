@@ -95,7 +95,13 @@ echo -e "${BLUE}🤖 Available models:${NC}"
 echo -e "  1. mistral (default - good balance of speed and quality)"
 echo -e "  2. phi3:mini (fast and efficient)"
 
-read -p "Choose model (1-2) [1]: " model_choice
+# Check if we're in an interactive terminal
+if [ -t 0 ]; then
+    read -p "Choose model (1-2) [1]: " model_choice
+else
+    echo -e "${YELLOW}⚠️  Non-interactive mode detected. Using default model: mistral${NC}"
+    model_choice="1"
+fi
 
 case $model_choice in
     1|"")

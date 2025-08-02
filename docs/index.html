@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Commayte - AI-Powered Git Commit Message Generator</title>
-    <meta name="description" content="Generate intelligent, conventional commit messages with AI. Beautiful interactive CLI with Mistral model support.">
+    <meta name="description" content="Generate intelligent, conventional commit messages with AI. Beautiful interactive CLI with 100% local processing and privacy.">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -44,7 +44,7 @@
                 </h1>
                 <p class="hero-description">
                     Transform your Git workflow with AI-generated conventional commit messages. 
-                    Beautiful interactive CLI powered by Mistral model.
+                    Interactive CLI with local models - your code never leaves your machine.
                 </p>
                 <div class="hero-buttons">
                     <a href="#installation" class="btn btn-primary">
@@ -68,6 +68,10 @@
                     <div class="stat">
                         <span class="stat-number">🎨</span>
                         <span class="stat-label">Beautiful UI</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">🔒</span>
+                        <span class="stat-label">Privacy</span>
                     </div>
                 </div>
             </div>
@@ -98,7 +102,7 @@
                         <div class="terminal-line hidden" data-step="5">
                             <span class="output">What would you like to do?</span>
                         </div>
-                        <div class="terminal-line hidden" data-step="6">
+                        <div class="terminal-line hidden" data-step="6./">
                             <span class="options">
                                 <div class="option-line" data-option="0">❯ ✅ Accept and commit</div>
                                 <div class="option-line" data-option="1">  ✏️ Edit message</div>
@@ -125,7 +129,7 @@
                         <i class="fas fa-brain"></i>
                     </div>
                     <h3>AI-Powered</h3>
-                    <p>Uses Mistral model to analyze your code changes and generate intelligent, context-aware commit messages.</p>
+                    <p>Uses local AI models to analyze your code changes and generate intelligent, context-aware commit messages.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
@@ -153,14 +157,14 @@
                         <i class="fas fa-rocket"></i>
                     </div>
                     <h3>Zero Setup</h3>
-                    <p>One-line installation that automatically sets up Ollama and downloads the Mistral model.</p>
+                    <p>One-line installation that automatically sets up Ollama and downloads your chosen AI model.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-shield-alt"></i>
                     </div>
-                    <h3>Local & Private</h3>
-                    <p>Everything runs locally on your machine. No data sent to external services.</p>
+                    <h3>100% Private & Local</h3>
+                    <p>Your code never leaves your machine. Complete privacy with local AI processing - no cloud dependencies.</p>
                 </div>
             </div>
         </div>
@@ -208,8 +212,8 @@
                     <div class="step">
                         <div class="step-number">3</div>
                         <div class="step-content">
-                            <h4>Download Mistral</h4>
-                            <p>Downloads the Mistral AI model</p>
+                            <h4>Choose & Download Model</h4>
+                            <p>Select and download your preferred AI model</p>
                         </div>
                     </div>
                     <div class="step">
@@ -257,9 +261,9 @@
                         <i class="fas fa-check"></i>
                     </div>
                     <h3>3. Choose Action</h3>
-                    <p>Accept, regenerate, or cancel the message</p>
+                    <p>Accept, edit, regenerate, or cancel the message</p>
                     <div class="code-block">
-                        <code>✅ Accept  🔄 Regenerate  ❌ Cancel</code>
+                        <code>✅ Accept  ✏️ Edit  🔄 Regenerate  ❌ Cancel</code>
                     </div>
                 </div>
             </div>
@@ -293,7 +297,7 @@
                     <h4>Resources</h4>
                     <a href="https://www.conventionalcommits.org/" target="_blank">Conventional Commits</a>
                     <a href="https://ollama.ai/" target="_blank">Ollama</a>
-                    <a href="https://mistral.ai/" target="_blank">Mistral AI</a>
+                    <a href="https://github.com/ollama/ollama" target="_blank">Local AI Models</a>
                 </div>
             </div>
             <div class="footer-bottom">
