@@ -25,7 +25,7 @@ struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            model: "phi3:mini".to_string(),
+            model: "mistral".to_string(),
         }
     }
 }
