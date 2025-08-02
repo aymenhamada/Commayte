@@ -3,7 +3,7 @@ use anyhow::Result;
 use reqwest::blocking::Client;
 use spinners::{Spinner, Spinners};
 use dialoguer::{theme::ColorfulTheme, Select};
-use std::io::{self, Write, BufRead, stdin, stdout, Read};
+use std::io::{self, Write, stdout};
 use colored::*;
 use console::style;
 
@@ -147,14 +147,14 @@ fn clean_commit_message(message: &str) -> String {
     let valid_types = ["feat", "fix", "chore", "docs", "style", "refactor", "test", "perf"];
     let parts: Vec<&str> = cleaned.split(':').collect();
     if parts.len() < 2 {
-        return "chore: update code".to_string();
+        return "".to_string();
     }
 
     let type_part = parts[0];
     let has_valid_type = valid_types.iter().any(|&t| type_part.starts_with(t));
     
     if !has_valid_type {
-        return "chore: update code".to_string();
+        return "".to_string();
     }
 
     cleaned
@@ -191,24 +191,95 @@ fn print_header(title: &str) {
 }
 
 fn edit_in_terminal(initial_text: &str) -> Result<String> {
-    // For now, let's use a simpler approach that's more reliable
-    // Show the current message and let user type a new one
-    // This is more reliable than trying to implement complex terminal editing
-    println!();
-    println!("{}", "Current message:".dimmed());
-    println!("{}", initial_text.bold().white());
-    println!();
-    println!("{}", "Type the new message (or press Enter to keep current):".yellow());
+    use crossterm::{
+        cursor::{self, MoveToColumn},
+        event::{self, Event, KeyCode, KeyEvent, KeyModifiers},
+        execute,
+        terminal::{self, Clear, ClearType},
+        style::{Color, Print, ResetColor, SetForegroundColor},
+    };
     
-    let mut input = String::new();
-    stdin().lock().read_line(&mut input)?;
+    // Enable raw mode for better control
+    terminal::enable_raw_mode()?;
     
-    let edited = input.trim();
-    if edited.is_empty() {
-        Ok(initial_text.to_string())
-    } else {
-        Ok(edited.to_string())
+    // Clear the line and show prompt
+    execute!(stdout(), Clear(ClearType::CurrentLine))?;
+    execute!(stdout(), Print("Edit commit message: "))?;
+    
+    // Print the initial text
+    execute!(stdout(), Print(initial_text))?;
+    
+    let mut current_text = initial_text.to_string();
+    let mut cursor_pos = current_text.len();
+    
+    // Position cursor at the end
+    execute!(stdout(), MoveToColumn((current_text.len() + 21) as u16))?;
+    
+    loop {
+        match event::read()? {
+            Event::Key(KeyEvent { code, modifiers, .. }) => {
+                match code {
+                    KeyCode::Enter => {
+                        execute!(stdout(), Print("\n"))?;
+                        break;
+                    }
+                    KeyCode::Char('c') if modifiers.contains(KeyModifiers::CONTROL) => {
+                        // Handle Ctrl+C
+                        execute!(stdout(), Print("\n"))?;
+                        terminal::disable_raw_mode()?;
+                        return Err(anyhow::anyhow!("Editing cancelled by user"));
+                    }
+                    KeyCode::Backspace => {
+                        if cursor_pos > 0 {
+                            // Remove character from text
+                            current_text.remove(cursor_pos - 1);
+                            cursor_pos -= 1;
+                            
+                            // Move cursor back
+                            execute!(stdout(), cursor::MoveLeft(1))?;
+                            
+                            // Clear the character
+                            execute!(stdout(), Print(" "))?;
+                            execute!(stdout(), cursor::MoveLeft(1))?;
+                        }
+                    }
+                    KeyCode::Char(c) => {
+                        // Insert character at cursor position
+                        current_text.insert(cursor_pos, c);
+                        cursor_pos += 1;
+                        execute!(stdout(), Print(c))?;
+                    }
+                    KeyCode::Left => {
+                        if cursor_pos > 0 {
+                            cursor_pos -= 1;
+                            execute!(stdout(), cursor::MoveLeft(1))?;
+                        }
+                    }
+                    KeyCode::Right => {
+                        if cursor_pos < current_text.len() {
+                            cursor_pos += 1;
+                            execute!(stdout(), cursor::MoveRight(1))?;
+                        }
+                    }
+                    KeyCode::Home => {
+                        execute!(stdout(), MoveToColumn(20))?;
+                        cursor_pos = 0;
+                    }
+                    KeyCode::End => {
+                        execute!(stdout(), MoveToColumn((current_text.len() + 21) as u16))?;
+                        cursor_pos = current_text.len();
+                    }
+                    _ => {}
+                }
+            }
+            _ => {}
+        }
     }
+    
+    // Disable raw mode
+    terminal::disable_raw_mode()?;
+    
+    Ok(current_text)
 }
 
 pub fn run() -> Result<()> {
@@ -265,38 +336,70 @@ pub fn run() -> Result<()> {
 
         let final_message = match selection {
             0 => clean_msg,
-            1 => {
-                clear_terminal();
-                print_header("> Commayte");
+                        1 => {
+                // Edit loop - keep editing until user confirms or cancels
+                let mut current_message = clean_msg.clone();
                 
-                // Use custom in-terminal editing
-                let edited_msg = edit_in_terminal(&clean_msg)?;
-                
-                let cleaned_edited_msg = clean_commit_message(&edited_msg);
-                
-                clear_terminal();
-                print_header("> Commayte");
-                
-                println!("📝 {} {}", "Edited commit message:".bold().green(), cleaned_edited_msg.bold().white());
-                println!();
-                
-                let confirm_options = vec!["✅ Use this message", "✏️ Edit again", "❌ Cancel"];
-                let confirm_selection = Select::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Confirm the edited message")
-                    .items(&confirm_options)
-                    .default(0)
-                    .interact()?;
-                
-                match confirm_selection {
-                    0 => cleaned_edited_msg,
-                    1 => continue, // This will restart the edit loop
-                    2 => {
-                        clear_terminal();
-                        print_header("> Commayte");
-                        println!("{}", "❌ Cancelled by user".red());
-                        return Ok(());
+                let edit_result = loop {
+                    clear_terminal();
+                    print_header("> Commayte");
+                    
+                    // Use custom in-terminal editing
+                    let edited_msg = match edit_in_terminal(&current_message) {
+                        Ok(msg) => msg,
+                        Err(e) => {
+                            if e.to_string().contains("Editing cancelled by user") {
+                                // Go back to main menu instead of exiting
+                                break None; // Break out of edit loop with None
+                            } else {
+                                return Err(e);
+                            }
+                        }
+                    };
+                    
+                    let cleaned_edited_msg = clean_commit_message(&edited_msg);
+                    
+                    clear_terminal();
+                    print_header("> Commayte");
+                    
+                    println!("📝 {} {}", "Edited commit message:".bold().green(), cleaned_edited_msg.bold().white());
+                    println!();
+                    
+                    let confirm_options = vec!["✅ Use this message", "✏️ Edit again", "❌ Cancel"];
+                    let confirm_selection = Select::with_theme(&ColorfulTheme::default())
+                        .with_prompt("Confirm the edited message")
+                        .items(&confirm_options)
+                        .default(0)
+                        .interact()?;
+                    
+                    match confirm_selection {
+                        0 => {
+                            // User confirmed, break out of edit loop
+                            break Some(cleaned_edited_msg);
+                        }
+                        1 => {
+                            // User wants to edit again, update current message and continue loop
+                            current_message = cleaned_edited_msg;
+                            continue;
+                        }
+                        2 => {
+                            // User cancelled
+                            clear_terminal();
+                            print_header("> Commayte");
+                            println!("{}", "❌ Cancelled by user".red());
+                            return Ok(());
+                        }
+                        _ => unreachable!(),
                     }
-                    _ => unreachable!(),
+                };
+                
+                // Handle the result from the edit loop
+                match edit_result {
+                    Some(msg) => msg,
+                    None => {
+                        // Go back to main menu without regenerating
+                        continue; // This will go back to the main loop
+                    }
                 }
             }
             2 => continue, // Regenerate message

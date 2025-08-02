@@ -21,6 +21,7 @@ spinners = "4.1"               # For fancy loading spinners
 dialoguer = "0.11"             # For interactive prompts and confirmations
 colored = "2.0"                # For colored terminal output
 console = "0.15"               # For terminal styling
+crossterm = "0.27"             # For terminal control and cursor manipulation
 
 [profile.release]
 opt-level = 3
