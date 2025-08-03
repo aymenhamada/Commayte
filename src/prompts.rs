@@ -11,7 +11,7 @@ pub fn generate_commit_prompt(diff: &str) -> String {
                 - chore: maintenance, dependencies, config changes\n\
                 - docs: documentation updates\n\
                 - style: formatting, whitespace, code style (Do not use style unless the change is purely formatting)\n\
-                - refactor: code restructuring without changing behavior\n\
+                - refactor: refactoring code without changing behavior\n\
                 - test: adding or updating tests\n\
         3. Determine scope from the file path\n\
         4. Write a short, concise description based on what was actually changed under 50 characters\n\

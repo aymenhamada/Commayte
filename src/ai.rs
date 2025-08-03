@@ -67,7 +67,7 @@ pub fn generate_commit_message(prompt: &str, project_context: &str, configuratio
             "prompt": prompt,
             "system": system_prompt,
             "options": {
-                "temperature": 0.2,
+                "temperature": 0.4,
                 "top_k": 20,
                 "top_p": 0.8,
                 "num_predict": 128,
