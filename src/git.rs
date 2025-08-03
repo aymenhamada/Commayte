@@ -323,7 +323,7 @@ pub fn extract_filename_from_diff_header(header: &str) -> Option<&str> {
 /// Executes a git commit command
 pub fn execute_git_commit(message: &str) -> Result<std::process::ExitStatus> {
     let result = Command::new("git")
-        .args(["commit", "-am", message])
+        .args(["commit", "-m", message])
         .stdout(std::process::Stdio::null())
         .stderr(std::process::Stdio::null())
         .status()?;
