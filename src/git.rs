@@ -1,6 +1,216 @@
 use anyhow::Result;
 use std::process::Command;
 
+/// Patterns for files that should be ignored in git diff analysis
+/// These files are typically dependency managers, build artifacts, IDE files, etc.
+const IGNORED_PATTERNS: [&str; 182] = [
+    // Lock files and dependency managers
+    ".lock",
+    ".lockfile",
+    "package-lock.json",
+    "yarn.lock",
+    "pnpm-lock.yaml",
+    "Cargo.lock",
+    "Gemfile.lock",
+    "composer.lock",
+    "poetry.lock",
+    "Pipfile.lock",
+    "requirements.txt",
+    "requirements-dev.txt",
+    "pyproject.toml",
+    "setup.py",
+    "setup.cfg",
+    "package.json",
+    "bun.lockb",
+    "go.mod",
+    "go.sum",
+    "Pipfile",
+    "mix.lock",
+    "Gemfile",
+    "composer.json",
+    "pubspec.lock",
+    "Podfile.lock",
+    "Cartfile.resolved",
+    "Pods/",
+    "node_modules/",
+    "vendor/",
+    "bower_components/",
+    "jspm_packages/",
+    
+    // Build artifacts and compiled files
+    "target/",
+    "dist/",
+    "build/",
+    "out/",
+    "bin/",
+    "obj/",
+    "Debug/",
+    "Release/",
+    "x64/",
+    "x86/",
+    "*.o",
+    "*.obj",
+    "*.exe",
+    "*.dll",
+    "*.so",
+    "*.dylib",
+    "*.a",
+    "*.lib",
+    "*.class",
+    "*.jar",
+    "*.war",
+    "*.ear",
+    "*.pyc",
+    "__pycache__/",
+    "*.pyo",
+    "*.pyd",
+    "*.egg",
+    "*.egg-info/",
+    "*.whl",
+    "*.tar.gz",
+    "*.zip",
+    "*.rar",
+    "*.7z",
+    
+    // IDE and editor files
+    ".vscode/",
+    ".idea/",
+    "*.swp",
+    "*.swo",
+    "*~",
+    ".DS_Store",
+    "Thumbs.db",
+    "desktop.ini",
+    ".vs/",
+    "*.suo",
+    "*.user",
+    "*.userosscache",
+    "*.sln.docstates",
+    "*.userprefs",
+    "*.pidb",
+    "*.booproj",
+    "*.svd",
+    "*.pdb",
+    "*.mdb",
+    "*.opendb",
+    "*.VC.db",
+    "*.VC.VC.opendb",
+    
+    // Logs and temporary files
+    "*.log",
+    "*.tmp",
+    "*.temp",
+    "*.cache",
+    "*.bak",
+    "*.backup",
+    "*.old",
+    "*.orig",
+    "*.rej",
+    ".fuse_hidden*",
+    ".Trash-*",
+    ".nfs*",
+    
+    // Environment and config files
+    ".env",
+    ".env.local",
+    ".env.development",
+    ".env.test",
+    ".env.production",
+    ".env.example",
+    ".env.template",
+    "config.local.*",
+    "settings.local.*",
+    
+    // AI/ML model files
+    "models/",
+    "*.gguf",
+    "*.bin",
+    "*.safetensors",
+    "*.pt",
+    "*.pth",
+    "*.onnx",
+    "*.tflite",
+    "*.h5",
+    "*.pb",
+    "*.ckpt",
+    "*.weights",
+    "*.model",
+    
+    // Database files
+    "*.db",
+    "*.sqlite",
+    "*.sqlite3",
+    "*.mdb",
+    "*.accdb",
+    
+    // Git and version control
+    ".git/",
+    ".gitignore",
+    ".gitattributes",
+    ".gitmodules",
+    ".gitkeep",
+    ".git-blame*",
+    
+    // Documentation and media
+    "*.pdf",
+    "*.doc",
+    "*.docx",
+    "*.xls",
+    "*.xlsx",
+    "*.ppt",
+    "*.pptx",
+    "*.jpg",
+    "*.jpeg",
+    "*.png",
+    "*.gif",
+    "*.bmp",
+    "*.svg",
+    "*.ico",
+    "*.mp3",
+    "*.mp4",
+    "*.avi",
+    "*.mov",
+    "*.wmv",
+    "*.flv",
+    "*.webm",
+    "*.mkv",
+    "*.tar",
+    "*.gz",
+    
+    // OS specific
+    ".DS_Store?",
+    "._*",
+    ".Spotlight-V100",
+    ".Trashes",
+    "ehthumbs.db",
+    "$RECYCLE.BIN/",
+    "*.lnk",
+    
+    // Test coverage and reports
+    "coverage/",
+    "*.lcov",
+    "*.coverage",
+    "htmlcov/",
+    ".coverage",
+    "coverage.xml",
+    "junit.xml",
+    "test-results/",
+    "reports/",
+    "*.report",
+    "*.out",
+    
+    // Dependencies and package managers
+    "packages/",
+    "lib/",
+    "libs/",
+    "deps/",
+    "dependencies/",
+    "third_party/",
+    "third-party/",
+    "external/",
+    "externals/",
+];
+
 pub fn get_git_diff() -> String {
     let output = Command::new("git")
         .args(["diff", "--cached"])
@@ -9,38 +219,6 @@ pub fn get_git_diff() -> String {
         .expect("Failed to get git diff");
 
     let diff_output = String::from_utf8_lossy(&output.stdout);
-
-    // Files to ignore (dependency managers, lock files, etc.)
-    let ignored_patterns = [
-        ".lock",
-        ".lockfile",
-        "package-lock.json",
-        "yarn.lock",
-        "Cargo.lock",
-        "Gemfile.lock",
-        "composer.lock",
-        "poetry.lock",
-        "Pipfile.lock",
-        "requirements.txt",
-        "package.json",
-        "node_modules/",
-        "vendor/",
-        "target/",
-        "dist/",
-        "build/",
-        ".git/",
-        ".DS_Store",
-        "*.log",
-        "*.tmp",
-        "*.cache",
-        ".env",
-        ".env.local",
-        ".env.example",
-        "models/",
-        "*.gguf",
-        "*.bin",
-        "*.safetensors",
-    ];
 
     let mut filtered_diff = Vec::new();
     let mut current_file = String::new();
@@ -81,13 +259,16 @@ pub fn get_git_diff() -> String {
             // Extract filename from diff header
             if let Some(filename) = extract_filename_from_diff_header(line) {
                 // Check if file should be ignored
-                let should_ignore = ignored_patterns.iter().any(|pattern| {
+                let should_ignore = IGNORED_PATTERNS.iter().any(|pattern| {
                     if let Some(suffix) = pattern.strip_prefix('*') {
                         // Handle wildcard patterns
                         filename.ends_with(suffix)
                     } else if let Some(dir_pattern) = pattern.strip_suffix('/') {
-                        // Handle directory patterns
-                        filename.starts_with(dir_pattern)
+                        if dir_pattern == ".git" {
+                            filename == ".git" || filename.starts_with(".git/")
+                        } else {
+                            filename.starts_with(dir_pattern)
+                        }
                     } else {
                         // Handle exact patterns
                         filename.contains(pattern)

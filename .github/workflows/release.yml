@@ -45,7 +45,11 @@ jobs:
       - name: Rename binary
         run: |
           mkdir -p out
-          cp target/${{ matrix.target }}/release/commayte out/${{ matrix.binary_name }}
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            cp target/${{ matrix.target }}/release/commayte.exe out/${{ matrix.binary_name }}
+          else
+            cp target/${{ matrix.target }}/release/commayte out/${{ matrix.binary_name }}
+          fi
 
       - name: Upload binary
         uses: actions/upload-artifact@v4
