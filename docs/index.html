@@ -178,55 +178,106 @@
                 <p>One command to install everything you need</p>
             </div>
             <div class="install-card">
-                <div class="install-header">
-                    <div class="badge-logo">
-                        <div class="prompt-icon" style="font-size: 16px;">></div>
-                        <div class="badge-text">
-                            <span class="comma">Comma</span>yte
-                        </div>
-                        <div class="ai-indicator"></div>
+                <div class="tab-container">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" onclick="switchTab('install')">
+                            <i class="fas fa-download"></i>
+                            Install
+                        </button>
+                        <button class="tab-btn" onclick="switchTab('uninstall')">
+                            <i class="fas fa-trash"></i>
+                            Uninstall
+                        </button>
                     </div>
-                    <span>Quick Install</span>
-                </div>
-                <div class="install-code">
-                    <code>curl -fsSL https://github.com/aymenhamada/Commayte/releases/latest/download/install.sh | bash</code>
-                    <button class="copy-btn" onclick="copyToClipboard(this)">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                </div>
-                <div class="install-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>Check Prerequisites</h4>
-                            <p>Verifies Git and curl are installed</p>
+                    
+                    <!-- Install Tab -->
+                    <div id="install-tab" class="tab-content active">
+                        <div class="install-header">
+                            <div class="badge-logo">
+                                <div class="prompt-icon" style="font-size: 16px;">></div>
+                                <div class="badge-text">
+                                    <span class="comma">Comma</span>yte
+                                </div>
+                                <div class="ai-indicator"></div>
+                            </div>
+                            <span>Quick Install</span>
+                        </div>
+                        <div class="install-code">
+                            <code>curl -fsSL https://github.com/aymenhamada/Commayte/releases/latest/download/install.sh | bash</code>
+                            <button class="copy-btn" onclick="copyToClipboard(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="install-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Check Prerequisites</h4>
+                                    <p>Verifies Git and curl are installed</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Install Ollama</h4>
+                                    <p>Downloads and installs Ollama locally</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Download & Install</h4>
+                                    <p>Downloads your chosen model and installs Commayte</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="install-note">
+                            <h4>💡 Manual Configuration</h4>
+                            <p>Want a different model? Edit <code>~/.config/commayte/config.toml</code> and run <code>ollama pull your-model</code></p>
                         </div>
                     </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>Install Ollama</h4>
-                            <p>Downloads and installs Ollama locally</p>
+                    
+                    <!-- Uninstall Tab -->
+                    <div id="uninstall-tab" class="tab-content">
+                        <div class="install-header">
+                            <div class="badge-logo">
+                                <div class="prompt-icon" style="font-size: 16px;">🗑️</div>
+                                <div class="badge-text">
+                                    <span class="comma">Uninstall</span>
+                                </div>
+                            </div>
+                            <span>Complete Removal</span>
+                        </div>
+                        <div class="install-code">
+                            <code>curl -fsSL https://github.com/aymenhamada/Commayte/releases/latest/download/uninstall.sh | bash</code>
+                            <button class="copy-btn" onclick="copyToClipboard(this)">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        <div class="install-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Remove Binary</h4>
+                                    <p>Deletes Commayte executable</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Clean Configuration</h4>
+                                    <p>Removes config files and settings</p>
+                                </div>
+                            </div>
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Stop Ollama</h4>
+                                    <p>Stops the Ollama service And optionally removes it</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>Interactive Model Selection</h4>
-                            <p>Choose between Mistral or Phi3:latest models</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h4>Download & Install</h4>
-                            <p>Downloads your chosen model and installs Commayte</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="install-note">
-                    <h4>💡 Manual Configuration</h4>
-                    <p>Want a different model? Edit <code>~/.config/commayte/config.toml</code> and run <code>ollama pull your-model</code></p>
                 </div>
             </div>
         </div>

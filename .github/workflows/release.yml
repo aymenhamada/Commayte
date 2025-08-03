@@ -43,6 +43,7 @@ jobs:
         run: cargo build --release --target ${{ matrix.target }} --bin commayte
 
       - name: Rename binary
+        shell: bash
         run: |
           mkdir -p out
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
