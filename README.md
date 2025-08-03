@@ -8,7 +8,7 @@ AI-powered git commit message generator with a beautiful interactive CLI.
 
 ## ✨ Features
 
-- 🤖 **AI-Powered**: Uses Mistral model for intelligent commit messages
+- 🤖 **AI-Powered**: Uses Local AI LLM model for intelligent commit messages
 - 🎨 **Beautiful UI**: Interactive CLI with spinners and colors
 - 📝 **Conventional Commits**: Follows the conventional commit specification
 - 🔄 **Interactive**: Regenerate messages until you're satisfied
@@ -25,16 +25,36 @@ curl -fsSL https://github.com/aymenhamada/Commayte/releases/latest/download/inst
 That's it! The installer will:
 - ✅ Check prerequisites (Git, curl)
 - 📦 Install Ollama locally
-- 🤖 **Interactive model selection** (Mistral or Phi3:mini)
+- 🤖 **Interactive model selection** (Phi3:latest or Mistral)
 - 📥 Download your chosen model
 - 📦 Install Commayte binary
 - ⚙️ Configure everything automatically
 
+**Supported Platforms:**
+- 🐧 Linux (x86_64)
+- 🍎 macOS (Intel & Apple Silicon)
+- 🪟 Windows (x86_64, via Git Bash/WSL)
+
+## 🗑️ Uninstall
+
+**To completely remove Commayte:**
+
+```bash
+curl -fsSL https://github.com/aymenhamada/Commayte/releases/latest/download/uninstall.sh | bash
+```
+
+The uninstaller will:
+- 🗑️ Remove Commayte binary
+- ⚙️ Clean up configuration files
+- 🛑 Stop Ollama service
+- 🧹 Clean up PATH configuration
+- 🤖 Optionally remove Ollama completely
+
 ### Model Selection
 
 The installer runs in **interactive mode** to let you choose your preferred AI model:
-- **Mistral** (default): Good balance of speed and quality
-- **Phi3:mini**: Fast and efficient
+- **Phi3:latest** (default): good balance of speed and qualiry
+- **Mistral**: Better quality, more consuming
 
 ### Manual Configuration
 

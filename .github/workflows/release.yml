@@ -20,6 +20,9 @@ jobs:
           - os: macos-latest
             target: aarch64-apple-darwin
             binary_name: commayte-macos-arm64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            binary_name: commayte-windows-x86_64.exe
 
     steps:
       - name: Checkout code
@@ -69,13 +72,20 @@ jobs:
           cp scripts/install.sh install.sh
           chmod +x install.sh
 
+      - name: Create uninstall script
+        run: |
+          cp scripts/uninstall.sh uninstall.sh
+          chmod +x uninstall.sh
+
       - name: Create release archive
         run: |
           tar -czf commayte-${{ github.ref_name }}.tar.gz \
             commayte-linux-x86_64 \
             commayte-macos-x86_64 \
             commayte-macos-arm64 \
-            install.sh
+            commayte-windows-x86_64.exe \
+            install.sh \
+            uninstall.sh
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -85,7 +95,9 @@ jobs:
             commayte-linux-x86_64
             commayte-macos-x86_64
             commayte-macos-arm64
+            commayte-windows-x86_64.exe
             install.sh
+            uninstall.sh
           draft: false
           prerelease: false
         env:

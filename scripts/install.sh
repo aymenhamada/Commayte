@@ -50,10 +50,83 @@ else
     
     if [ "$OS" = "darwin" ]; then
         echo -e "${YELLOW}🍎 Installing Ollama for macOS...${NC}"
-        curl -fsSL https://ollama.ai/install.sh | sh
+        
+        # Check if Homebrew is installed
+        if command_exists brew; then
+            echo -e "${YELLOW}📦 Installing Ollama via Homebrew...${NC}"
+            brew install ollama
+        else
+            echo -e "${YELLOW}📦 Installing Ollama manually for macOS...${NC}"
+            
+            # Download and install Ollama for macOS
+            OLLAMA_VERSION=$(curl -s https://api.github.com/repos/ollama/ollama/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+            
+            if [ -z "$OLLAMA_VERSION" ]; then
+                echo -e "${RED}❌ Could not determine Ollama version${NC}"
+                exit 1
+            fi
+            
+            # Download Ollama for macOS
+            DOWNLOAD_URL="https://github.com/ollama/ollama/releases/download/${OLLAMA_VERSION}/ollama-darwin-amd64"
+            
+            echo -e "${YELLOW}📥 Downloading Ollama ${OLLAMA_VERSION}...${NC}"
+            curl -L -o /tmp/ollama "$DOWNLOAD_URL"
+            
+            if [ $? -ne 0 ]; then
+                echo -e "${RED}❌ Failed to download Ollama${NC}"
+                exit 1
+            fi
+            
+            # Make executable and install
+            chmod +x /tmp/ollama
+            sudo mv /tmp/ollama /usr/local/bin/ollama
+            
+            echo -e "${GREEN}✅ Ollama installed successfully${NC}"
+        fi
+        
     elif [ "$OS" = "linux" ]; then
         echo -e "${YELLOW}🐧 Installing Ollama for Linux...${NC}"
         curl -fsSL https://ollama.ai/install.sh | sh
+    elif [[ "$OS" == *"msys"* ]] || [[ "$OS" == *"cygwin"* ]] || [[ "$OS" == *"mingw"* ]]; then
+        echo -e "${YELLOW}🪟 Installing Ollama for Windows...${NC}"
+        
+        # Check if Chocolatey is installed
+        if command_exists choco; then
+            echo -e "${YELLOW}📦 Installing Ollama via Chocolatey...${NC}"
+            choco install ollama -y
+        else
+            echo -e "${YELLOW}📦 Installing Ollama manually for Windows...${NC}"
+            
+            # Download and install Ollama for Windows
+            OLLAMA_VERSION=$(curl -s https://api.github.com/repos/ollama/ollama/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+            
+            if [ -z "$OLLAMA_VERSION" ]; then
+                echo -e "${RED}❌ Could not determine Ollama version${NC}"
+                exit 1
+            fi
+            
+            # Download Ollama for Windows
+            DOWNLOAD_URL="https://github.com/ollama/ollama/releases/download/${OLLAMA_VERSION}/ollama-windows-amd64.exe"
+            
+            echo -e "${YELLOW}📥 Downloading Ollama ${OLLAMA_VERSION}...${NC}"
+            curl -L -o /tmp/ollama.exe "$DOWNLOAD_URL"
+            
+            if [ $? -ne 0 ]; then
+                echo -e "${RED}❌ Failed to download Ollama${NC}"
+                exit 1
+            fi
+            
+            # Install to Program Files
+            echo -e "${YELLOW}🔧 Installing Ollama to Program Files...${NC}"
+            mkdir -p "/c/Program Files/Ollama"
+            cp /tmp/ollama.exe "/c/Program Files/Ollama/ollama.exe"
+            
+            # Add to PATH
+            echo -e "${YELLOW}📝 Adding Ollama to PATH...${NC}"
+            export PATH="/c/Program Files/Ollama:$PATH"
+            
+            echo -e "${GREEN}✅ Ollama installed successfully${NC}"
+        fi
     else
         echo -e "${RED}❌ Unsupported operating system: $OS${NC}"
         exit 1
@@ -92,26 +165,26 @@ fi
 # Ask user for model preference early
 echo -e "${YELLOW}⚙️  Model Selection${NC}"
 echo -e "${BLUE}🤖 Available models:${NC}"
-echo -e "  1. mistral (default - good balance of speed and quality)"
-echo -e "  2. phi3:mini (fast and efficient)"
+echo -e "  1. phi3:latest (default - good balance of speed and quality)"
+echo -e "  2. mistral (better quality, more consuming)"
 
 # Check if we're in an interactive terminal
 if [ -t 0 ]; then
     read -p "Choose model (1-2) [1]: " model_choice
 else
-    echo -e "${YELLOW}⚠️  Non-interactive mode detected. Using default model: mistral${NC}"
+    echo -e "${YELLOW}⚠️  Non-interactive mode detected. Using default model: phi3:latest${NC}"
     model_choice="1"
 fi
 
 case $model_choice in
     1|"")
-        MODEL="mistral"
+        MODEL="phi3:latest"
         ;;
     2)
-        MODEL="phi3:mini"
+        MODEL="mistral"
         ;;
     *)
-        MODEL="mistral"
+        MODEL="phi3:latest"
         ;;
 esac
 
@@ -157,6 +230,8 @@ if [ "$OS" = "darwin" ]; then
     fi
 elif [ "$OS" = "linux" ]; then
     BINARY="commayte-linux-x86_64"
+elif [[ "$OS" == *"msys"* ]] || [[ "$OS" == *"cygwin"* ]] || [[ "$OS" == *"mingw"* ]]; then
+    BINARY="commayte-windows-x86_64.exe"
 else
     echo -e "${RED}❌ Unsupported operating system: $OS${NC}"
     exit 1
@@ -198,10 +273,26 @@ fi
 
 chmod +x "/tmp/$BINARY/$BINARY"
 
-# Install to /usr/local/bin (requires sudo)
-echo -e "${YELLOW}🔧 Installing to /usr/local/bin/commayte...${NC}"
-sudo cp "/tmp/$BINARY/$BINARY" /usr/local/bin/commayte
-sudo chmod +x /usr/local/bin/commayte
+# Install binary based on platform
+if [[ "$OS" == *"msys"* ]] || [[ "$OS" == *"cygwin"* ]] || [[ "$OS" == *"mingw"* ]]; then
+    # Windows installation
+    echo -e "${YELLOW}🔧 Installing to Program Files/Commayte...${NC}"
+    mkdir -p "/c/Program Files/Commayte"
+    cp "/tmp/$BINARY/$BINARY" "/c/Program Files/Commayte/commayte.exe"
+    
+    # Add to PATH
+    echo -e "${YELLOW}📝 Adding Commayte to PATH...${NC}"
+    export PATH="/c/Program Files/Commayte:$PATH"
+    
+    # Create a batch file for easy access
+    echo '@echo off' > "/c/Program Files/Commayte/commayte.bat"
+    echo 'commayte.exe %*' >> "/c/Program Files/Commayte/commayte.bat"
+else
+    # Unix-like installation
+    echo -e "${YELLOW}🔧 Installing to /usr/local/bin/commayte...${NC}"
+    sudo cp "/tmp/$BINARY/$BINARY" /usr/local/bin/commayte
+    sudo chmod +x /usr/local/bin/commayte
+fi
 
 # Clean up
 rm -rf "/tmp/$BINARY"
@@ -209,46 +300,68 @@ rm "/tmp/commayte-$LATEST_RELEASE.tar.gz"
 
 echo -e "${GREEN}✅ Commayte installed successfully!${NC}"
 
-# Ensure /usr/local/bin is in PATH
+# Ensure binary is in PATH
 echo -e "${YELLOW}🔍 Checking PATH configuration...${NC}"
-if [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
-    echo -e "${YELLOW}⚠️  /usr/local/bin not found in PATH${NC}"
-    
-    # Detect shell and add to appropriate config file
-    SHELL_CONFIG=""
-    if [[ "$SHELL" == *"zsh"* ]]; then
-        SHELL_CONFIG="$HOME/.zshrc"
-    elif [[ "$SHELL" == *"bash"* ]]; then
-        SHELL_CONFIG="$HOME/.bashrc"
-    fi
-    
-    if [ -n "$SHELL_CONFIG" ]; then
-        echo -e "${YELLOW}📝 Adding /usr/local/bin to PATH in $SHELL_CONFIG${NC}"
-        echo "" >> "$SHELL_CONFIG"
-        echo "# Commayte PATH configuration" >> "$SHELL_CONFIG"
-        echo 'export PATH="/usr/local/bin:$PATH"' >> "$SHELL_CONFIG"
-        echo -e "${GREEN}✅ PATH updated. Please restart your terminal or run: source $SHELL_CONFIG${NC}"
+if [[ "$OS" == *"msys"* ]] || [[ "$OS" == *"cygwin"* ]] || [[ "$OS" == *"mingw"* ]]; then
+    # Windows PATH configuration
+    if [[ ":$PATH:" != *":/c/Program Files/Commayte:"* ]]; then
+        echo -e "${YELLOW}⚠️  Commayte not found in PATH${NC}"
+        echo -e "${YELLOW}📝 Please add 'C:\Program Files\Commayte' to your Windows PATH${NC}"
+        echo -e "${YELLOW}💡 You can do this in System Properties > Environment Variables${NC}"
     else
-        echo -e "${YELLOW}⚠️  Please add /usr/local/bin to your PATH manually${NC}"
-        echo -e "${YELLOW}💡 Add this line to your shell config: export PATH=\"/usr/local/bin:\$PATH\"${NC}"
+        echo -e "${GREEN}✅ Commayte is already in PATH${NC}"
     fi
 else
-    echo -e "${GREEN}✅ /usr/local/bin is already in PATH${NC}"
+    # Unix-like PATH configuration
+    if [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
+        echo -e "${YELLOW}⚠️  /usr/local/bin not found in PATH${NC}"
+        
+        # Detect shell and add to appropriate config file
+        SHELL_CONFIG=""
+        if [[ "$SHELL" == *"zsh"* ]]; then
+            SHELL_CONFIG="$HOME/.zshrc"
+        elif [[ "$SHELL" == *"bash"* ]]; then
+            SHELL_CONFIG="$HOME/.bashrc"
+        fi
+        
+        if [ -n "$SHELL_CONFIG" ]; then
+            echo -e "${YELLOW}📝 Adding /usr/local/bin to PATH in $SHELL_CONFIG${NC}"
+            echo "" >> "$SHELL_CONFIG"
+            echo "# Commayte PATH configuration" >> "$SHELL_CONFIG"
+            echo 'export PATH="/usr/local/bin:$PATH"' >> "$SHELL_CONFIG"
+            echo -e "${GREEN}✅ PATH updated. Please restart your terminal or run: source $SHELL_CONFIG${NC}"
+        else
+            echo -e "${YELLOW}⚠️  Please add /usr/local/bin to your PATH manually${NC}"
+            echo -e "${YELLOW}💡 Add this line to your shell config: export PATH=\"/usr/local/bin:\$PATH\"${NC}"
+        fi
+    else
+        echo -e "${GREEN}✅ /usr/local/bin is already in PATH${NC}"
+    fi
 fi
 
 # Create configuration directory
-mkdir -p ~/.config/commayte
+if [[ "$OS" == *"msys"* ]] || [[ "$OS" == *"cygwin"* ]] || [[ "$OS" == *"mingw"* ]]; then
+    # Windows configuration directory
+    CONFIG_DIR="$APPDATA/Commayte"
+    mkdir -p "$CONFIG_DIR"
+    CONFIG_FILE="$CONFIG_DIR/config.toml"
+else
+    # Unix-like configuration directory
+    CONFIG_DIR="$HOME/.config/commayte"
+    mkdir -p "$CONFIG_DIR"
+    CONFIG_FILE="$CONFIG_DIR/config.toml"
+fi
 
 # Create configuration
 echo -e "${YELLOW}⚙️  Setting up configuration...${NC}"
 
 # Create the configuration file
-cat > ~/.config/commayte/config.toml << EOF
+cat > "$CONFIG_FILE" << EOF
 # Commayte Configuration
 model = "$MODEL"
 EOF
 
-echo -e "${GREEN}✅ Configuration created at ~/.config/commayte/config.toml${NC}"
+echo -e "${GREEN}✅ Configuration created at $CONFIG_FILE${NC}"
 echo -e "${BLUE}📋 Current settings:${NC}"
 echo -e "  Model: $MODEL"
 
