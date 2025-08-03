@@ -24,10 +24,9 @@ pub fn run() -> Result<()> {
         return Ok(());
     }
 
-    let branch = git::get_git_branch();
     let project_context = project::get_project_context();
 
-    let prompt = prompts::generate_commit_prompt(&diff, &branch);
+    let prompt = prompts::generate_commit_prompt(&diff);
 
     let mut should_regenerate = true;
     let mut clean_msg = String::new();

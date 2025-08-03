@@ -66,6 +66,12 @@ pub fn generate_commit_message(prompt: &str, project_context: &str, configuratio
             "model": configuration.model,
             "prompt": prompt,
             "system": system_prompt,
+            "options": {
+                "temperature": 0.2,
+                "top_k": 20,
+                "top_p": 0.8,
+                "num_predict": 128,
+            },
             "stream": false
         }))
         .timeout(Duration::from_secs(45))
