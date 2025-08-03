@@ -53,8 +53,8 @@ The uninstaller will:
 ### Model Selection
 
 The installer runs in **interactive mode** to let you choose your preferred AI model:
-- **Phi3:latest** (default): good balance of speed and qualiry
-- **Mistral**: Better quality, more consuming
+- **Mistral** (default): Better quality, more consuming
+- **Phi3:latest**: Good balance of speed and quality
 
 ### Manual Configuration
 

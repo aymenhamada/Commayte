@@ -165,26 +165,26 @@ fi
 # Ask user for model preference early
 echo -e "${YELLOW}⚙️  Model Selection${NC}"
 echo -e "${BLUE}🤖 Available models:${NC}"
-echo -e "  1. phi3:latest (default - good balance of speed and quality)"
-echo -e "  2. mistral (better quality, more consuming)"
+echo -e "  1. mistral (default - better quality, more consuming)"
+echo -e "  2. phi3:latest (good balance of speed and quality)"
 
 # Check if we're in an interactive terminal
 if [ -t 0 ]; then
     read -p "Choose model (1-2) [1]: " model_choice
 else
-    echo -e "${YELLOW}⚠️  Non-interactive mode detected. Using default model: phi3:latest${NC}"
+    echo -e "${YELLOW}⚠️  Non-interactive mode detected. Using default model: mistral${NC}"
     model_choice="1"
 fi
 
 case $model_choice in
     1|"")
-        MODEL="phi3:latest"
-        ;;
-    2)
         MODEL="mistral"
         ;;
-    *)
+    2)
         MODEL="phi3:latest"
+        ;;
+    *)
+        MODEL="mistral"
         ;;
 esac
 

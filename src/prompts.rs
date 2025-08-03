@@ -3,7 +3,7 @@ pub fn generate_commit_prompt(diff: &str) -> String {
     format!(
         "Analyze the git diff below and generate a conventional commit message.\n\n\
         Instructions:\n\n\
-        1. Look at each file name, added lines (+), and removed lines (-)\n\
+        1. Look at each file name, added lines (+), and removed lines (-) and only consider the changes of the the lines that are actually changed with (+) or (-)\n\
         2. Determine the type based on the changes:\n\
             Types: feat, fix, chore, docs, style, refactor, test, perf\n\
                 - feat: new features or functionality\n\
