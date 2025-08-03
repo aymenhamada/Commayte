@@ -2,16 +2,21 @@ use anyhow::Result;
 use colored::*;
 
 use crate::ai;
+use crate::config;
 use crate::git;
 use crate::project;
 use crate::prompts;
 use crate::terminal;
 
 pub fn run() -> Result<()> {
-    // Debug config path if needed (uncomment to debug)
-    // crate::config::debug_config_path();
-    
     terminal::clear_terminal();
+
+    let configuration = config::load_config();
+
+    terminal::print_header(
+        &format!("Using model: {}", configuration.model),
+        Some(console::Color::Yellow),
+    );
 
     let diff = git::get_git_diff();
     if diff.trim().is_empty() {
@@ -19,17 +24,19 @@ pub fn run() -> Result<()> {
         return Ok(());
     }
 
+    let branch = git::get_git_branch();
     let project_context = project::get_project_context();
-    let prompt = prompts::generate_commit_prompt(&diff);
+
+    let prompt = prompts::generate_commit_prompt(&diff, &branch);
 
     let mut should_regenerate = true;
     let mut clean_msg = String::new();
+    terminal::print_header("> Commayte", None);
     loop {
         if should_regenerate {
             terminal::clear_terminal();
-            terminal::print_header("> Commayte");
             let mut sp = terminal::show_spinner("Generating commit message...");
-            clean_msg = ai::generate_commit_message(&prompt, &project_context)?;
+            clean_msg = ai::generate_commit_message(&prompt, &project_context, &configuration)?;
             sp.stop();
             println!();
         }
@@ -60,7 +67,6 @@ pub fn run() -> Result<()> {
 
                 let edit_result = loop {
                     terminal::clear_terminal();
-                    terminal::print_header("> Commayte");
 
                     // Use custom in-terminal editing
                     let edited_msg = match terminal::edit_in_terminal(&current_message) {
@@ -78,7 +84,6 @@ pub fn run() -> Result<()> {
                     let cleaned_edited_msg = ai::clean_commit_message(&edited_msg);
 
                     terminal::clear_terminal();
-                    terminal::print_header("> Commayte");
 
                     println!(
                         "📝 {} {}",
@@ -106,7 +111,6 @@ pub fn run() -> Result<()> {
                         2 => {
                             // User cancelled
                             terminal::clear_terminal();
-                            terminal::print_header("> Commayte");
                             println!("{}", "❌ Cancelled by user".red());
                             return Ok(());
                         }
@@ -130,7 +134,6 @@ pub fn run() -> Result<()> {
             }
             3 => {
                 terminal::clear_terminal();
-                terminal::print_header("> Commayte");
                 println!("{}", "❌ Cancelled by user".red());
                 return Ok(());
             }
@@ -139,15 +142,13 @@ pub fn run() -> Result<()> {
 
         // Commit with the final message (either original, edited, or regenerated)
         terminal::clear_terminal();
-        terminal::print_header("> Commayte");
 
         let mut commit_sp = terminal::show_spinner("Committing changes...");
 
-        let commit_result = terminal::execute_git_commit(&final_message);
+        let commit_result = git::execute_git_commit(&final_message);
 
         commit_sp.stop();
         terminal::clear_terminal();
-        terminal::print_header("> Commayte");
 
         match commit_result {
             Ok(status) if status.success() => {

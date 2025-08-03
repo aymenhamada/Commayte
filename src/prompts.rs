@@ -1,7 +1,7 @@
 /// Generates the main prompt for commit message generation
-pub fn generate_commit_prompt(diff: &str) -> String {
+pub fn generate_commit_prompt(diff: &str, branch: &str) -> String {
     format!(
-        "Analyze the git diff below and generate a conventional commit message.\n\n\
+        "Analyze the git diff below and generate a conventional commit message. The branch is {branch}.\n\n\
         Instructions:\n\n\
         1. Look at each file name, added lines (+), and removed lines (-)\n\
         2. Determine the type based on the changes:\n\
@@ -13,7 +13,7 @@ pub fn generate_commit_prompt(diff: &str) -> String {
                 - style: formatting, whitespace, code style (Do not use style unless the change is purely formatting)\n\
                 - refactor: code restructuring without changing behavior\n\
                 - test: adding or updating tests\n\
-        3. Determine scope from the file path (e.g., client, server, config, ui)\n\
+        3. Determine scope from the file path\n\
         4. Write a short, concise description under 30 characters based on what was actually changed\n\
         Use Format: type(scope): description\n\
         Git diff:\n{diff}\n\n\

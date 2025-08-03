@@ -1,5 +1,4 @@
 use anyhow::Result;
-use colored::*;
 use console::style;
 use crossterm::{
     cursor::{self, MoveToColumn},
@@ -11,9 +10,6 @@ use crossterm::{
 use dialoguer::{theme::ColorfulTheme, Select};
 use spinners::{Spinner, Spinners};
 use std::io::{self, stdout, Write};
-use std::process::Command;
-
-use crate::config;
 
 /// Clears the terminal screen
 pub fn clear_terminal() {
@@ -21,14 +17,22 @@ pub fn clear_terminal() {
 }
 
 /// Prints the application header with model information
-pub fn print_header(title: &str) {
-    let configuration = config::load_config();
-    println!(
-        "{} {} (using {})\n",
-        "".bold().yellow(),
-        style(title).bold().cyan(),
-        configuration.model.bold().white()
-    );
+pub fn print_header(title: &str, color: Option<console::Color>) {
+    if let Some(color) = color {
+        match color {
+            console::Color::Red => println!("{}\n", style(title).bold().red()),
+            console::Color::Green => println!("{}\n", style(title).bold().green()),
+            console::Color::Yellow => println!("{}\n", style(title).bold().yellow()),
+            console::Color::Blue => println!("{}\n", style(title).bold().blue()),
+            console::Color::Magenta => println!("{}\n", style(title).bold().magenta()),
+            console::Color::Cyan => println!("{}\n", style(title).bold().cyan()),
+            console::Color::White => println!("{}\n", style(title).bold().white()),
+            console::Color::Black => println!("{}\n", style(title).bold().black()),
+            _ => println!("{}\n", style(title).bold().cyan()),
+        }
+    } else {
+        println!("{}\n", style(title).bold().cyan());
+    }
 }
 
 /// Provides in-terminal editing functionality for commit messages
@@ -78,9 +82,12 @@ pub fn edit_in_terminal(initial_text: &str) -> Result<String> {
                         let remaining_text = &current_text[cursor_pos..];
                         execute!(stdout(), Print(remaining_text))?;
                         execute!(stdout(), Print(" "))?; // Clear the last character
-                        
+
                         // Move cursor back to the correct position
-                        execute!(stdout(), cursor::MoveLeft((remaining_text.len() + 1) as u16))?;
+                        execute!(
+                            stdout(),
+                            cursor::MoveLeft((remaining_text.len() + 1) as u16)
+                        )?;
                     }
                 }
                 KeyCode::Char(c) => {
@@ -88,11 +95,11 @@ pub fn edit_in_terminal(initial_text: &str) -> Result<String> {
                     current_text.insert(cursor_pos, c);
                     cursor_pos += 1;
                     execute!(stdout(), Print(c))?;
-                    
+
                     // Redraw the rest of the text from the new cursor position
                     let remaining_text = &current_text[cursor_pos..];
                     execute!(stdout(), Print(remaining_text))?;
-                    
+
                     // Move cursor back to the correct position (after the inserted character)
                     if !remaining_text.is_empty() {
                         execute!(stdout(), cursor::MoveLeft(remaining_text.len() as u16))?;
@@ -143,15 +150,4 @@ pub fn show_selection_menu(options: Vec<&str>, prompt: &str) -> Result<usize> {
 /// Shows a spinner with the given message
 pub fn show_spinner(message: &str) -> Spinner {
     Spinner::new(Spinners::Dots9, message.into())
-}
-
-/// Executes a git commit command
-pub fn execute_git_commit(message: &str) -> Result<std::process::ExitStatus> {
-    let result = Command::new("git")
-        .args(["commit", "-am", message])
-        .stdout(std::process::Stdio::null())
-        .stderr(std::process::Stdio::null())
-        .status()?;
-
-    Ok(result)
 }
