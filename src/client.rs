@@ -40,10 +40,12 @@ pub fn run() -> Result<()> {
 
     let prompt = prompts::generate_commit_prompt(&diff);
 
+    println!("{}", prompt);
+
     let mut should_regenerate = true;
     let mut clean_msg = String::new();
 
-    terminal::print_header(&format!("> Commayte (v{})", VERSION), None);
+    terminal::print_header(&format!("> Commayte (v{VERSION})"), None);
 
     loop {
         if should_regenerate {

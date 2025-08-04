@@ -41,22 +41,22 @@ impl SystemSpecs {
     }
     pub fn get_max_total_content(&self) -> usize {
         match self.performance_level {
-            PerformanceLevel::VeryLow => 1500,
+            PerformanceLevel::VeryLow => 1000,
             PerformanceLevel::Low => 2000,
             PerformanceLevel::Medium => 3000,
-            PerformanceLevel::Good => 4000,
-            PerformanceLevel::High => 5000,
-            PerformanceLevel::VeryHigh => 6000,
+            PerformanceLevel::Good => 5000,
+            PerformanceLevel::High => 10000,
+            PerformanceLevel::VeryHigh => 15000,
         }
     }
 
     pub fn get_max_file_content(&self) -> usize {
         match self.performance_level {
-            PerformanceLevel::VeryLow => 200,
-            PerformanceLevel::Low => 500,
-            PerformanceLevel::Medium => 700,
-            PerformanceLevel::Good => 1000,
-            PerformanceLevel::High => 1200,
+            PerformanceLevel::VeryLow => 100,
+            PerformanceLevel::Low => 200,
+            PerformanceLevel::Medium => 300,
+            PerformanceLevel::Good => 500,
+            PerformanceLevel::High => 1000,
             PerformanceLevel::VeryHigh => 1500,
         }
     }

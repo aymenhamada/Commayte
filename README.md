@@ -35,44 +35,6 @@ That's it! The installer will:
 - 🍎 macOS (Intel & Apple Silicon)
 - 🪟 Windows (x86_64, via Git Bash/WSL)
 
-## 🗑️ Uninstall
-
-**To completely remove Commayte:**
-
-```bash
-curl -fsSL https://github.com/aymenhamada/Commayte/releases/latest/download/uninstall.sh | bash
-```
-
-The uninstaller will:
-- 🗑️ Remove Commayte binary
-- ⚙️ Clean up configuration files
-- 🛑 Stop Ollama service
-- 🧹 Clean up PATH configuration
-- 🤖 Optionally remove Ollama completely
-
-### Model Selection
-
-The installer runs in **interactive mode** to let you choose your preferred AI model:
-- **Mistral** (default): Better quality, more consuming
-- **Phi3:latest**: Good balance of speed and quality
-
-### Manual Configuration
-
-If you prefer a different model or want to change later, you can manually edit the configuration:
-
-```bash
-# Edit the config file
-nano ~/.config/commayte/config.toml
-
-# Change the model property
-model = "your-preferred-model"
-```
-
-Then download your chosen model:
-```bash
-ollama pull your-preferred-model
-```
-
 ## 📖 Usage
 
 1. **Stage your changes:**
@@ -101,6 +63,44 @@ commayte
 # Generated: fix(client): resolve authentication token validation
 # ✅ Accept and commit
 ```
+
+## Model Selection
+
+The installer runs in **interactive mode** to let you choose your preferred AI model:
+- **Mistral** (default): Better quality, more consuming
+- **Phi3:latest**: Good balance of speed and quality
+
+### Manual Configuration
+
+If you prefer a different model or want to change later, you can manually edit the configuration:
+
+```bash
+# Edit the config file
+nano ~/.config/commayte/config.toml
+
+# Change the model property
+model = "your-preferred-model"
+```
+
+Then download your chosen model:
+```bash
+ollama pull your-preferred-model
+```
+
+## 🗑️ Uninstall
+
+**To completely remove Commayte:**
+
+```bash
+curl -fsSL https://github.com/aymenhamada/Commayte/releases/latest/download/uninstall.sh | bash
+```
+
+The uninstaller will:
+- 🗑️ Remove Commayte binary
+- ⚙️ Clean up configuration files
+- 🛑 Stop Ollama service
+- 🧹 Clean up PATH configuration
+- 🤖 Optionally remove Ollama completely
 
 ## 🛠️ Development
 

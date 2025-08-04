@@ -1,6 +1,6 @@
 [package]
 name = "Commayte"
-version = "1.4.0"
+version = "1.5.0"
 edition = "2021"
 authors = ["Aymen Hamada <aymen.hamada@epitech.eu>"]
 description = "AI-powered git commit message generator with interactive CLI"
@@ -22,6 +22,10 @@ crossterm = "0.27"             # For terminal control and cursor manipulation
 toml = "0.8"                   # For configuration file format
 dirs = "5.0"                   # For finding config directories
 num_cpus = "1.16"              # For getting CPU core count
+clap = { version = "4.0", features = ["derive"] }  # CLI argument parsing
+semver = "1.0"                 # Semantic versioning for update checks
+flate2 = "1.0"                 # For tar.gz extraction
+tar = "0.4"                    # For tar archive handling
 
 [profile.release]
 opt-level = 3
