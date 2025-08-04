@@ -307,7 +307,7 @@ pub fn get_git_diff(system_specs: &system::SystemSpecs) -> String {
         // Collect remaining file headers that weren't processed
         let mut remaining_headers = Vec::new();
         let mut in_current_file = false;
-        
+
         for line in diff_output.lines() {
             if line.starts_with("diff --git") {
                 in_current_file = true;
@@ -319,7 +319,7 @@ pub fn get_git_diff(system_specs: &system::SystemSpecs) -> String {
                 in_current_file = false;
             }
         }
-        
+
         if !remaining_headers.is_empty() {
             filtered_diff.push("... (diff truncated due to size limit)".to_string());
             filtered_diff.push("Remaining files:".to_string());

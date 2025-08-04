@@ -10,10 +10,7 @@ keywords = ["git", "commit", "ai", "cli", "conventional-commits"]
 categories = ["command-line-utilities", "development-tools"]
 
 [dependencies]
-llama_cpp = "0.3"               # For loading and running the TinyLLaMA model
 anyhow = "1.0"                  # For error handling
-tokio = { version = "1", features = ["full"] }  # Async runtime for axum server
-axum = "0.6"                   # Web framework for server API
 serde = { version = "1.0", features = ["derive"] }   # Serialization/deserialization
 serde_json = "1.0"             # JSON serialization/deserialization
 reqwest = { version = "0.11", features = ["blocking", "json"] }  # HTTP client for CLI sync requests
