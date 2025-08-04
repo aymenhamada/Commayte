@@ -214,6 +214,7 @@ pub fn get_git_diff(system_specs: &system::SystemSpecs) -> String {
     let mut current_file = String::new();
     let mut include_current_file = true;
     let mut total_content_length = 0;
+    let mut hit_total_limit = false;
 
     // Get content limits from system specs
     let max_total_content = system_specs.get_max_total_content();
@@ -237,7 +238,7 @@ pub fn get_git_diff(system_specs: &system::SystemSpecs) -> String {
 
                 let file_size = file_content.len();
                 if total_content_length + file_size > max_total_content {
-                    filtered_diff.push("... (diff truncated due to size limit)".to_string());
+                    hit_total_limit = true;
                     break;
                 }
                 filtered_diff.push(file_content);
@@ -281,7 +282,7 @@ pub fn get_git_diff(system_specs: &system::SystemSpecs) -> String {
     }
 
     // Don't forget the last file
-    if include_current_file && !current_file.is_empty() {
+    if include_current_file && !current_file.is_empty() && !hit_total_limit {
         let mut file_content = current_file.clone();
 
         // Truncate individual file if it's too large
@@ -296,6 +297,33 @@ pub fn get_git_diff(system_specs: &system::SystemSpecs) -> String {
         let file_size = file_content.len();
         if total_content_length + file_size <= max_total_content {
             filtered_diff.push(file_content);
+        } else {
+            hit_total_limit = true;
+        }
+    }
+
+    // If we hit the total limit, add the remaining file headers
+    if hit_total_limit {
+        // Collect remaining file headers that weren't processed
+        let mut remaining_headers = Vec::new();
+        let mut in_current_file = false;
+        
+        for line in diff_output.lines() {
+            if line.starts_with("diff --git") {
+                in_current_file = true;
+                remaining_headers.push(line.to_string());
+            } else if in_current_file && line.starts_with("---") {
+                remaining_headers.push(line.to_string());
+            } else if in_current_file && line.starts_with("+++") {
+                remaining_headers.push(line.to_string());
+                in_current_file = false;
+            }
+        }
+        
+        if !remaining_headers.is_empty() {
+            filtered_diff.push("... (diff truncated due to size limit)".to_string());
+            filtered_diff.push("Remaining files:".to_string());
+            filtered_diff.extend(remaining_headers);
         }
     }
 
