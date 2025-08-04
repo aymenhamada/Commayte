@@ -16,12 +16,10 @@ impl Default for Config {
 }
 
 fn get_config_path() -> PathBuf {
-    dirs::config_dir()
-        .unwrap_or_else(|| {
-            dirs::home_dir()
-                .unwrap_or_else(|| PathBuf::from("."))
-                .join(".config")
-        })
+    // Always use ~/.config/commayte to match the install script
+    dirs::home_dir()
+        .unwrap_or_else(|| PathBuf::from("."))
+        .join(".config")
         .join("commayte")
         .join("config.toml")
 }
