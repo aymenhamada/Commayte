@@ -38,9 +38,7 @@ pub fn check_for_updates() -> Result<Option<GitHubRelease>> {
     println!("🔍 Checking for updates...");
 
     let client = reqwest::blocking::Client::new();
-    let url = format!(
-        "{GITHUB_API_BASE}/repos/{REPO_OWNER}/{REPO_NAME}/releases/latest"
-    );
+    let url = format!("{GITHUB_API_BASE}/repos/{REPO_OWNER}/{REPO_NAME}/releases/latest");
 
     let response = client
         .get(&url)
@@ -75,9 +73,7 @@ pub fn check_for_updates() -> Result<Option<GitHubRelease>> {
 
         Ok(Some(release))
     } else {
-        println!(
-            "✅ You're running the latest version (v{CURRENT_VERSION})"
-        );
+        println!("✅ You're running the latest version (v{CURRENT_VERSION})");
         Ok(None)
     }
 }
@@ -239,14 +235,10 @@ fn get_platform_identifier() -> Result<String> {
     }
 }
 
-
-
 pub fn show_update_info() {
     println!("📋 Update Information:");
     println!("   Current version: v{CURRENT_VERSION}");
-    println!(
-        "   Repository: https://github.com/{REPO_OWNER}/{REPO_NAME}"
-    );
+    println!("   Repository: https://github.com/{REPO_OWNER}/{REPO_NAME}");
     println!("   Check for updates: commayte update");
     println!("   Auto-update: commayte update --auto");
 }

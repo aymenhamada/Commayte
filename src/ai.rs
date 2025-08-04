@@ -55,26 +55,13 @@ pub fn clean_commit_message(message: &str) -> String {
 }
 
 /// Generates a commit message using the configured AI model
-pub fn generate_commit_message(
-    prompt: &str,
-    project_context: &str,
-    configuration: &config::Config,
-) -> Result<String> {
+pub fn generate_commit_message(prompt: &str, configuration: &config::Config) -> Result<String> {
     let client = Client::new();
-
-    let system_prompt = format!("You are a expert in git commit messages. Return only the commit message, no explanations. Follow conventional commits format. Project: {project_context}");
     let response = client
         .post("http://localhost:11434/api/generate")
         .json(&serde_json::json!({
             "model": configuration.model,
             "prompt": prompt,
-            "system": system_prompt,
-            "options": {
-                "temperature": 0.4,
-                "top_k": 20,
-                "top_p": 0.8,
-                "num_predict": 128,
-            },
             "stream": false
         }))
         .timeout(Duration::from_secs(45))

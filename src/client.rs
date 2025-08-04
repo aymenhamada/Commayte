@@ -38,9 +38,7 @@ pub fn run() -> Result<()> {
 
     let project_context = project::get_project_context();
 
-    let prompt = prompts::generate_commit_prompt(&diff);
-
-    println!("{}", prompt);
+    let prompt = prompts::generate_commit_prompt(&diff, &project_context);
 
     let mut should_regenerate = true;
     let mut clean_msg = String::new();
@@ -51,7 +49,7 @@ pub fn run() -> Result<()> {
         if should_regenerate {
             terminal::clear_terminal();
             let mut sp = terminal::show_spinner("Generating commit message...");
-            clean_msg = ai::generate_commit_message(&prompt, &project_context, &configuration)?;
+            clean_msg = ai::generate_commit_message(&prompt, &configuration)?;
             sp.stop();
             println!();
         }
