@@ -33,16 +33,13 @@ pub fn load_config() -> Config {
         Ok(config_content) => match toml::from_str(&config_content) {
             Ok(config) => config,
             Err(e) => {
-                eprintln!("Warning: Failed to parse config file: {}", e);
+                eprintln!("Warning: Failed to parse config file: {e}");
                 eprintln!("Using default configuration");
                 Config::default()
             }
         },
         Err(e) => {
-            eprintln!(
-                "Warning: Could not read config file at {:?}: {}",
-                config_path, e
-            );
+            eprintln!("Warning: Could not read config file at {config_path:?}: {e}",);
             eprintln!("Using default configuration");
             Config::default()
         }

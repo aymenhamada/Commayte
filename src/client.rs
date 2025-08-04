@@ -6,6 +6,7 @@ use crate::config;
 use crate::git;
 use crate::project;
 use crate::prompts;
+use crate::system;
 use crate::terminal;
 
 pub fn run() -> Result<()> {
@@ -13,12 +14,22 @@ pub fn run() -> Result<()> {
 
     let configuration = config::load_config();
 
+    // Get system specs once at the beginning
+    let system_specs = system::get_system_info().unwrap_or(system::SystemSpecs {
+        cpu_cores: None,
+        cpu_model: None,
+        memory_gb: None,
+        gpu_model: None,
+        os_info: None,
+        performance_level: system::PerformanceLevel::Medium,
+    });
+
     terminal::print_header(
         &format!("Using model: {}", configuration.model),
         Some(console::Color::Yellow),
     );
 
-    let diff = git::get_git_diff();
+    let diff = git::get_git_diff(&system_specs);
     if diff.trim().is_empty() {
         println!("{}", "⚠️  No changes to commit.".yellow());
         return Ok(());

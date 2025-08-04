@@ -55,10 +55,17 @@ pub fn clean_commit_message(message: &str) -> String {
 }
 
 /// Generates a commit message using the configured AI model
-pub fn generate_commit_message(prompt: &str, project_context: &str, configuration: &config::Config) -> Result<String> {
+pub fn generate_commit_message(
+    prompt: &str,
+    project_context: &str,
+    configuration: &config::Config,
+) -> Result<String> {
     let client = Client::new();
 
-    let system_prompt = format!("You are a concise AI assistant that only returns single-line Git commit messages and that follows the conventional commit format https://www.conventionalcommits.org/en/v1.0.0/. Never include explanations. Project context: \n\n{project_context}");
+    let system_prompt = format!("You are a Git commit message generator. Return only the commit message, no explanations. Follow conventional commits format. Project: {project_context}");
+
+    println!("System prompt: {}", system_prompt);
+    println!("Prompt: {}", prompt);
 
     let response = client
         .post("http://localhost:11434/api/generate")

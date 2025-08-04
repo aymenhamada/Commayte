@@ -14,6 +14,7 @@ dependencies = [
  "dialoguer",
  "dirs",
  "llama_cpp",
+ "num_cpus",
  "reqwest",
  "serde",
  "serde_json",

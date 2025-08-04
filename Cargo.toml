@@ -24,6 +24,7 @@ console = "0.15"               # For terminal styling
 crossterm = "0.27"             # For terminal control and cursor manipulation
 toml = "0.8"                   # For configuration file format
 dirs = "5.0"                   # For finding config directories
+num_cpus = "1.16"              # For getting CPU core count
 
 [profile.release]
 opt-level = 3

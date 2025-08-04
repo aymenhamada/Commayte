@@ -1,3 +1,4 @@
+use crate::system;
 use anyhow::Result;
 use std::process::Command;
 
@@ -36,7 +37,6 @@ const IGNORED_PATTERNS: [&str; 182] = [
     "vendor/",
     "bower_components/",
     "jspm_packages/",
-    
     // Build artifacts and compiled files
     "target/",
     "dist/",
@@ -71,7 +71,6 @@ const IGNORED_PATTERNS: [&str; 182] = [
     "*.zip",
     "*.rar",
     "*.7z",
-    
     // IDE and editor files
     ".vscode/",
     ".idea/",
@@ -95,7 +94,6 @@ const IGNORED_PATTERNS: [&str; 182] = [
     "*.opendb",
     "*.VC.db",
     "*.VC.VC.opendb",
-    
     // Logs and temporary files
     "*.log",
     "*.tmp",
@@ -109,7 +107,6 @@ const IGNORED_PATTERNS: [&str; 182] = [
     ".fuse_hidden*",
     ".Trash-*",
     ".nfs*",
-    
     // Environment and config files
     ".env",
     ".env.local",
@@ -120,7 +117,6 @@ const IGNORED_PATTERNS: [&str; 182] = [
     ".env.template",
     "config.local.*",
     "settings.local.*",
-    
     // AI/ML model files
     "models/",
     "*.gguf",
@@ -135,14 +131,12 @@ const IGNORED_PATTERNS: [&str; 182] = [
     "*.ckpt",
     "*.weights",
     "*.model",
-    
     // Database files
     "*.db",
     "*.sqlite",
     "*.sqlite3",
     "*.mdb",
     "*.accdb",
-    
     // Git and version control
     ".git/",
     ".gitignore",
@@ -150,7 +144,6 @@ const IGNORED_PATTERNS: [&str; 182] = [
     ".gitmodules",
     ".gitkeep",
     ".git-blame*",
-    
     // Documentation and media
     "*.pdf",
     "*.doc",
@@ -176,7 +169,6 @@ const IGNORED_PATTERNS: [&str; 182] = [
     "*.mkv",
     "*.tar",
     "*.gz",
-    
     // OS specific
     ".DS_Store?",
     "._*",
@@ -185,7 +177,6 @@ const IGNORED_PATTERNS: [&str; 182] = [
     "ehthumbs.db",
     "$RECYCLE.BIN/",
     "*.lnk",
-    
     // Test coverage and reports
     "coverage/",
     "*.lcov",
@@ -198,7 +189,6 @@ const IGNORED_PATTERNS: [&str; 182] = [
     "reports/",
     "*.report",
     "*.out",
-    
     // Dependencies and package managers
     "packages/",
     "lib/",
@@ -211,7 +201,7 @@ const IGNORED_PATTERNS: [&str; 182] = [
     "externals/",
 ];
 
-pub fn get_git_diff() -> String {
+pub fn get_git_diff(system_specs: &system::SystemSpecs) -> String {
     let output = Command::new("git")
         .args(["diff", "--cached"])
         .stderr(std::process::Stdio::null())
@@ -224,8 +214,10 @@ pub fn get_git_diff() -> String {
     let mut current_file = String::new();
     let mut include_current_file = true;
     let mut total_content_length = 0;
-    const MAX_TOTAL_CONTENT: usize = 8000;
-    const MAX_FILE_CONTENT: usize = 1000; // Maximum characters per file
+
+    // Get content limits from system specs
+    let max_total_content = system_specs.get_max_total_content();
+    let max_file_content = system_specs.get_max_file_content();
 
     for line in diff_output.lines() {
         // Check if this is a file header (starts with "diff --git")
@@ -235,16 +227,16 @@ pub fn get_git_diff() -> String {
                 let mut file_content = current_file.clone();
 
                 // Truncate individual file if it's too large
-                if file_content.len() > MAX_FILE_CONTENT {
+                if file_content.len() > max_file_content {
                     file_content = file_content
                         .chars()
-                        .take(MAX_FILE_CONTENT)
+                        .take(max_file_content)
                         .collect::<String>();
                     file_content.push_str("\n... (file truncated)");
                 }
 
                 let file_size = file_content.len();
-                if total_content_length + file_size > MAX_TOTAL_CONTENT {
+                if total_content_length + file_size > max_total_content {
                     filtered_diff.push("... (diff truncated due to size limit)".to_string());
                     break;
                 }
@@ -293,16 +285,16 @@ pub fn get_git_diff() -> String {
         let mut file_content = current_file.clone();
 
         // Truncate individual file if it's too large
-        if file_content.len() > MAX_FILE_CONTENT {
+        if file_content.len() > max_file_content {
             file_content = file_content
                 .chars()
-                .take(MAX_FILE_CONTENT)
+                .take(max_file_content)
                 .collect::<String>();
             file_content.push_str("\n... (file truncated)");
         }
 
         let file_size = file_content.len();
-        if total_content_length + file_size <= MAX_TOTAL_CONTENT {
+        if total_content_length + file_size <= max_total_content {
             filtered_diff.push(file_content);
         }
     }
