@@ -15,6 +15,10 @@ use clap::{Parser, Subcommand};
 #[command(about = "AI-powered git commit message generator with interactive CLI")]
 #[command(version = env!("CARGO_PKG_VERSION"))]
 struct Cli {
+    /// Add emojis to commit messages for better visual appeal
+    #[arg(long)]
+    emoji: bool,
+    
     #[command(subcommand)]
     command: Option<Commands>,
 }
@@ -60,7 +64,7 @@ fn main() -> anyhow::Result<()> {
         }
         None => {
             // Default behavior - run the commit message generator
-            client::run()?;
+            client::run(cli.emoji)?;
         }
     }
 

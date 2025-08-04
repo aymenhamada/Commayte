@@ -1,4 +1,10 @@
-pub fn generate_commit_prompt(diff: &str, project_context: &str) -> String {
+pub fn generate_commit_prompt(diff: &str, project_context: &str, use_emoji: bool) -> String {
+    let emoji_instruction = if use_emoji {
+        "8. Add an appropriate emoji at the beginning of the description"
+    } else {
+        "RESPECT CONVENTIONAL COMMIT SPECIFICATION"
+    };
+    
     format!(
         "Analyze the git diff below and generate a conventional commit message.\n\n\
         Here some context about the project:\n\
@@ -17,10 +23,10 @@ pub fn generate_commit_prompt(diff: &str, project_context: &str) -> String {
         3. Determine scope from the file path (e.g., client, server, config, ui)\n\
         4. Write a description based on what was actually changed\n\
         5. Use format: type(scope): description\n\
-        6. Keep description short concise and under 30 characters\n\
-        7. Return ONLY the commit message\n\n\
+        6. Keep description short concise\n\
+        7. Return ONLY the commit message\n\
         RETURN ONLY THE COMMIT MESSAGE, NOTHING ELSE.\n\n\
-        RESPECT CONVENTIONAL COMMIT SPECIFICATION.\n\n\
+        {emoji_instruction}\n\n\
         RETURN ONLY THE COMMIT MESSAGE, NOTHING ELSE.\n\n\
         Git diff:\n{diff}\n\n\
         Commit message:"

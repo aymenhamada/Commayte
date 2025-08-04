@@ -11,7 +11,7 @@ use crate::terminal;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-pub fn run() -> Result<()> {
+pub fn run(use_emoji: bool) -> Result<()> {
     terminal::clear_terminal();
     let configuration = config::load_config();
 
@@ -38,7 +38,7 @@ pub fn run() -> Result<()> {
 
     let project_context = project::get_project_context();
 
-    let prompt = prompts::generate_commit_prompt(&diff, &project_context);
+    let prompt = prompts::generate_commit_prompt(&diff, &project_context, use_emoji);
 
     let mut should_regenerate = true;
     let mut clean_msg = String::new();
@@ -49,7 +49,7 @@ pub fn run() -> Result<()> {
         if should_regenerate {
             terminal::clear_terminal();
             let mut sp = terminal::show_spinner("Generating commit message...");
-            clean_msg = ai::generate_commit_message(&prompt, &configuration)?;
+            clean_msg = ai::generate_commit_message(&prompt, &configuration, use_emoji)?;
             sp.stop();
             println!();
         }
@@ -94,7 +94,7 @@ pub fn run() -> Result<()> {
                         }
                     };
 
-                    let cleaned_edited_msg = ai::clean_commit_message(&edited_msg);
+                    let cleaned_edited_msg = ai::clean_commit_message_with_emoji(&edited_msg, use_emoji);
 
                     terminal::clear_terminal();
 
