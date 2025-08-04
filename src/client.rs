@@ -9,9 +9,10 @@ use crate::prompts;
 use crate::system;
 use crate::terminal;
 
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 pub fn run() -> Result<()> {
     terminal::clear_terminal();
-
     let configuration = config::load_config();
 
     // Get system specs once at the beginning
@@ -41,7 +42,9 @@ pub fn run() -> Result<()> {
 
     let mut should_regenerate = true;
     let mut clean_msg = String::new();
-    terminal::print_header("> Commayte", None);
+
+    terminal::print_header(&format!("> Commayte (v{})", VERSION), None);
+
     loop {
         if should_regenerate {
             terminal::clear_terminal();

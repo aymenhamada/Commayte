@@ -1,6 +1,6 @@
 [package]
 name = "Commayte"
-version = "0.1.0"
+version = "1.4.0"
 edition = "2021"
 authors = ["Aymen Hamada <aymen.hamada@epitech.eu>"]
 description = "AI-powered git commit message generator with interactive CLI"
