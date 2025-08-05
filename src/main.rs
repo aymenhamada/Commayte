@@ -18,7 +18,7 @@ struct Cli {
     /// Add emojis to commit messages for better visual appeal
     #[arg(long)]
     emoji: bool,
-    
+
     #[command(subcommand)]
     command: Option<Commands>,
 }

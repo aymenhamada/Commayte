@@ -1,7 +1,7 @@
 use anyhow::Result;
 use console::style;
 use crossterm::{
-    cursor::{self, MoveToColumn},
+    cursor::{MoveToColumn},
     event::{self, Event, KeyCode, KeyEvent, KeyModifiers},
     execute,
     style::Print,
@@ -10,6 +10,9 @@ use crossterm::{
 use dialoguer::{theme::ColorfulTheme, Select};
 use spinners::{Spinner, Spinners};
 use std::io::{self, stdout, Write};
+use unicode_segmentation::UnicodeSegmentation;
+use unicode_width::UnicodeWidthStr;
+
 
 /// Clears the terminal screen
 pub fn clear_terminal() {
@@ -35,23 +38,31 @@ pub fn print_header(title: &str, color: Option<console::Color>) {
     }
 }
 
-/// Provides in-terminal editing functionality for commit messages
 pub fn edit_in_terminal(initial_text: &str) -> Result<String> {
-    // Enable raw mode for better control
     terminal::enable_raw_mode()?;
 
-    // Clear the line and show prompt
-    execute!(stdout(), Clear(ClearType::CurrentLine))?;
-    execute!(stdout(), Print("Edit commit message: "))?;
+    let mut stdout = stdout();
+    execute!(stdout, Clear(ClearType::CurrentLine))?;
+
+    let header_title = "Edit commit message: ";
+    execute!(stdout, Print(header_title))?;
+
+    let mut graphemes: Vec<String> = UnicodeSegmentation::graphemes(initial_text, true)
+        .map(|g| g.to_string())
+        .collect();
+    let mut cursor_pos = graphemes.len();
 
     // Print the initial text
-    execute!(stdout(), Print(initial_text))?;
+    for g in &graphemes {
+        execute!(stdout, Print(g))?;
+    }
 
-    let mut current_text = initial_text.to_string();
-    let mut cursor_pos = current_text.len();
-
-    // Position cursor at the end
-    execute!(stdout(), MoveToColumn((current_text.len() + 21) as u16))?;
+    execute!(
+        stdout,
+        MoveToColumn(
+            (header_title.len() + graphemes.iter().map(|g| g.width()).sum::<usize>()) as u16
+        )
+    )?;
 
     loop {
         if let Event::Key(KeyEvent {
@@ -60,80 +71,111 @@ pub fn edit_in_terminal(initial_text: &str) -> Result<String> {
         {
             match code {
                 KeyCode::Enter => {
-                    execute!(stdout(), Print("\n"))?;
+                    execute!(stdout, Print("\n"))?;
                     break;
                 }
                 KeyCode::Char('c') if modifiers.contains(KeyModifiers::CONTROL) => {
-                    // Handle Ctrl+C
-                    execute!(stdout(), Print("\n"))?;
+                    execute!(stdout, Print("\n"))?;
                     terminal::disable_raw_mode()?;
                     return Err(anyhow::anyhow!("Editing cancelled by user"));
                 }
                 KeyCode::Backspace => {
                     if cursor_pos > 0 {
-                        // Remove character from text
-                        current_text.remove(cursor_pos - 1);
                         cursor_pos -= 1;
+                        graphemes.remove(cursor_pos);
 
-                        // Move cursor back
-                        execute!(stdout(), cursor::MoveLeft(1))?;
-
-                        // Redraw the rest of the text from cursor position
-                        let remaining_text = &current_text[cursor_pos..];
-                        execute!(stdout(), Print(remaining_text))?;
-                        execute!(stdout(), Print(" "))?; // Clear the last character
-
-                        // Move cursor back to the correct position
+                        // Redraw line
                         execute!(
-                            stdout(),
-                            cursor::MoveLeft((remaining_text.len() + 1) as u16)
+                            stdout,
+                            MoveToColumn(header_title.len() as u16),
+                            Clear(ClearType::UntilNewLine)
+                        )?;
+                        for g in &graphemes {
+                            execute!(stdout, Print(g))?;
+                        }
+
+                        // Move cursor
+                        let left_width = graphemes[..cursor_pos]
+                            .iter()
+                            .map(|g| g.width())
+                            .sum::<usize>() as u16;
+                        execute!(
+                            stdout,
+                            MoveToColumn((header_title.len() + left_width as usize) as u16)
                         )?;
                     }
                 }
                 KeyCode::Char(c) => {
-                    // Insert character at cursor position
-                    current_text.insert(cursor_pos, c);
+                    graphemes.insert(cursor_pos, c.to_string());
                     cursor_pos += 1;
-                    execute!(stdout(), Print(c))?;
 
-                    // Redraw the rest of the text from the new cursor position
-                    let remaining_text = &current_text[cursor_pos..];
-                    execute!(stdout(), Print(remaining_text))?;
-
-                    // Move cursor back to the correct position (after the inserted character)
-                    if !remaining_text.is_empty() {
-                        execute!(stdout(), cursor::MoveLeft(remaining_text.len() as u16))?;
+                    // Redraw line
+                    execute!(
+                        stdout,
+                        MoveToColumn(header_title.len() as u16),
+                        Clear(ClearType::UntilNewLine)
+                    )?;
+                    for g in &graphemes {
+                        execute!(stdout, Print(g))?;
                     }
+
+                    // Move cursor
+                    let left_width = graphemes[..cursor_pos]
+                        .iter()
+                        .map(|g| g.width())
+                        .sum::<usize>() as u16;
+                    execute!(
+                        stdout,
+                        MoveToColumn((header_title.len() + left_width as usize) as u16)
+                    )?;
                 }
                 KeyCode::Left => {
                     if cursor_pos > 0 {
                         cursor_pos -= 1;
-                        execute!(stdout(), cursor::MoveLeft(1))?;
+                        let left_width = graphemes[..cursor_pos]
+                            .iter()
+                            .map(|g| g.width())
+                            .sum::<usize>() as u16;
+                        execute!(
+                            stdout,
+                            MoveToColumn((header_title.len() + left_width as usize) as u16)
+                        )?;
                     }
                 }
                 KeyCode::Right => {
-                    if cursor_pos < current_text.len() {
+                    if cursor_pos < graphemes.len() {
                         cursor_pos += 1;
-                        execute!(stdout(), cursor::MoveRight(1))?;
+                        let left_width = graphemes[..cursor_pos]
+                            .iter()
+                            .map(|g| g.width())
+                            .sum::<usize>() as u16;
+                        execute!(
+                            stdout,
+                            MoveToColumn((header_title.len() + left_width as usize) as u16)
+                        )?;
                     }
                 }
                 KeyCode::Home => {
-                    execute!(stdout(), MoveToColumn(20))?;
                     cursor_pos = 0;
+                    execute!(stdout, MoveToColumn(header_title.len() as u16))?;
                 }
                 KeyCode::End => {
-                    execute!(stdout(), MoveToColumn((current_text.len() + 21) as u16))?;
-                    cursor_pos = current_text.len();
+                    cursor_pos = graphemes.len();
+                    let width = graphemes.iter().map(|g| g.width()).sum::<usize>() as u16;
+                    execute!(
+                        stdout,
+                        MoveToColumn((header_title.len() + width as usize) as u16)
+                    )?;
                 }
                 _ => {}
             }
         }
     }
 
-    // Disable raw mode
     terminal::disable_raw_mode()?;
 
-    Ok(current_text)
+    let final_string = graphemes.concat().trim().to_string();
+    Ok(final_string)
 }
 
 /// Shows a selection menu and returns the user's choice

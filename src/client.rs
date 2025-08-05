@@ -94,14 +94,12 @@ pub fn run(use_emoji: bool) -> Result<()> {
                         }
                     };
 
-                    let cleaned_edited_msg = ai::clean_commit_message(&edited_msg);
-
-                    terminal::clear_terminal();
+                    println!();
 
                     println!(
                         "📝 {} {}",
                         "Edited commit message:".bold().green(),
-                        cleaned_edited_msg.bold().white()
+                        edited_msg.bold().white()
                     );
                     println!();
 
@@ -114,11 +112,11 @@ pub fn run(use_emoji: bool) -> Result<()> {
                     match confirm_selection {
                         0 => {
                             // User confirmed, break out of edit loop
-                            break Some(cleaned_edited_msg);
+                            break Some(edited_msg);
                         }
                         1 => {
                             // User wants to edit again, update current message and continue loop
-                            current_message = cleaned_edited_msg;
+                            current_message = edited_msg;
                             continue;
                         }
                         2 => {
