@@ -94,7 +94,7 @@ pub fn run(use_emoji: bool) -> Result<()> {
                         }
                     };
 
-                    let cleaned_edited_msg = ai::clean_commit_message_with_emoji(&edited_msg, use_emoji);
+                    let cleaned_edited_msg = ai::clean_commit_message(&edited_msg);
 
                     terminal::clear_terminal();
 

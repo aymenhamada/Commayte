@@ -26,6 +26,7 @@ clap = { version = "4.0", features = ["derive"] }  # CLI argument parsing
 semver = "1.0"                 # Semantic versioning for update checks
 flate2 = "1.0"                 # For tar.gz extraction
 tar = "0.4"                    # For tar archive handling
+lazy_static = "1.4"            # For static initialization
 
 [profile.release]
 opt-level = 3
