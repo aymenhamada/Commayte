@@ -4,7 +4,6 @@ use semver::Version;
 use serde::Deserialize;
 use std::env;
 use std::io::Cursor;
-use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 use std::process::Command;
 use tar::Archive;
@@ -106,6 +105,7 @@ pub fn perform_update(release: &GitHubRelease) -> Result<()> {
             Ok(_) => {
                 #[cfg(unix)]
                 {
+                    use std::os::unix::fs::PermissionsExt;
                     let mut perms = std::fs::metadata(&install_path)?.permissions();
                     perms.set_mode(0o755);
                     std::fs::set_permissions(&install_path, perms)?;
@@ -121,6 +121,7 @@ pub fn perform_update(release: &GitHubRelease) -> Result<()> {
 
                 #[cfg(unix)]
                 {
+                    use std::os::unix::fs::PermissionsExt;
                     let mut perms = std::fs::metadata(temp_path)?.permissions();
                     perms.set_mode(0o755);
                     std::fs::set_permissions(temp_path, perms)?;
