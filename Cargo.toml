@@ -1,6 +1,6 @@
 [package]
 name = "Commayte"
-version = "1.5.0"
+version = "1.5.1"
 edition = "2021"
 authors = ["Aymen Hamada <aymen.hamada@epitech.eu>"]
 description = "AI-powered git commit message generator with interactive CLI"
@@ -27,8 +27,8 @@ semver = "1.0"                 # Semantic versioning for update checks
 flate2 = "1.0"                 # For tar.gz extraction
 tar = "0.4"                    # For tar archive handling
 lazy_static = "1.4"            # For static initialization
-unicode-segmentation = "1.10"
-unicode-width = "0.1"
+unicode-segmentation = "1.10"  # For proper Unicode grapheme handling
+unicode-width = "0.1"          # For Unicode width calculation
 
 [profile.release]
 opt-level = 3

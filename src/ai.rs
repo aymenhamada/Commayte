@@ -18,69 +18,44 @@ lazy_static! {
     static ref GITMOJI_MAP: HashMap<&'static str, Vec<&'static str>> = {
         let mut map = HashMap::new();
 
-        // New features
+        // New features (feat)
         map.insert("feat", vec![
-            "🚀", "🎉", "💫", "🌟"
+            "✨", "🚀", "🎉", "💫", "🌟", "💡", "🍱", "🥚"
         ]);
 
-        // Bug fixes
+        // Bug fixes (fix)
         map.insert("fix", vec![
-            "🐛", "🚑️", "🩹", "🔧", "🔨"
+            "🐛", "🚑️", "🩹", "🔧", "🔨", "🥅", "🧐", "🩺"
         ]);
 
-        // Maintenance and config
+        // Maintenance and config (chore)
         map.insert("chore", vec![
-            "🔧", "🔨", "⚙️", "🔧", "📦️"
+            "🔧", "🔨", "⚙️", "📦️", "🏗️", "🧱", "🗑️", "⚰️"
         ]);
 
-        // Documentation
+        // Documentation (docs)
         map.insert("docs", vec![
-            "📝", "📚", "📖", "📄", "📋"
+            "📝", "📚", "📖", "📄", "📋", "🔖", "💬", "📸"
         ]);
 
-        // Code style and formatting
+        // Code style and formatting (style)
         map.insert("style", vec![
-            "🎨", "💄", "🎭", "✨", "💅"
+            "🎨", "💄", "🎭", "✨", "💅", "📱", "🌐", "♿️"
         ]);
 
-        // Code refactoring
+        // Code refactoring (refactor)
         map.insert("refactor", vec![
-            "♻️", "🔄", "🛠️", "🔨", "⚡"
+            "♻️", "🔄", "🛠️", "🔨", "⚡", "🏗️", "🧱", "💡"
         ]);
 
-        // Tests
+        // Tests (test)
         map.insert("test", vec![
-            "🧪", "✅", "🔬", "🧪", "🎯"
+            "🧪", "✅", "🔬", "🎯", "🥅", "🧐", "📸", "⚗️"
         ]);
 
-        // Performance improvements
+        // Performance improvements (perf)
         map.insert("perf", vec![
-            "⚡", "🚀", "💨", "🔥", "⚡️"
-        ]);
-
-        // Additional types for better coverage
-        map.insert("security", vec![
-            "🔒️", "🔐", "🛡️", "🔒", "🔐"
-        ]);
-
-        map.insert("ci", vec![
-            "👷", "🚧", "🔧", "⚙️", "🔨"
-        ]);
-
-        map.insert("build", vec![
-            "📦️", "🔨", "⚙️", "🔧", "🏗️"
-        ]);
-
-        map.insert("deps", vec![
-            "⬆️", "⬇️", "📌", "➕", "➖"
-        ]);
-
-        map.insert("revert", vec![
-            "⏪️", "↩️", "🔄", "⏮️", "↪️"
-        ]);
-
-        map.insert("breaking", vec![
-            "💥", "🚨", "⚠️", "💣", "🔥"
+            "⚡", "🚀", "💨", "🔥", "⚡️", "📈", "💫", "🏃"
         ]);
 
         map
@@ -191,12 +166,12 @@ fn add_gitmoji_to_commit(message: &str) -> String {
             let emoji_index = (hash % emoji_options.len() as u64) as usize;
             let selected_emoji = emoji_options[emoji_index];
 
-            return format!("{} {}", selected_emoji, message);
+            return format!("{selected_emoji} {message}");
         }
     }
 
     // Default emoji if no match found
-    format!("🔧 {}", message)
+    format!("🔧 {message}")
 }
 
 /// Generates a commit message using the configured AI model

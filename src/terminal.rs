@@ -1,7 +1,7 @@
 use anyhow::Result;
 use console::style;
 use crossterm::{
-    cursor::{MoveToColumn},
+    cursor::MoveToColumn,
     event::{self, Event, KeyCode, KeyEvent, KeyModifiers},
     execute,
     style::Print,
@@ -12,7 +12,6 @@ use spinners::{Spinner, Spinners};
 use std::io::{self, stdout, Write};
 use unicode_segmentation::UnicodeSegmentation;
 use unicode_width::UnicodeWidthStr;
-
 
 /// Clears the terminal screen
 pub fn clear_terminal() {
