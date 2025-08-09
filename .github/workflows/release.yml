@@ -49,7 +49,7 @@ jobs:
           if [ "${{ matrix.os }}" = "windows-latest" ]; then
             cp target/${{ matrix.target }}/release/commayte.exe out/${{ matrix.binary_name }}
           else
-            cp target/${{ matrix.target }}/release/commayte out/${{ matrix.binary_name }}
+          cp target/${{ matrix.target }}/release/commayte out/${{ matrix.binary_name }}
           fi
 
       - name: Upload binary

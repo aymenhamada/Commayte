@@ -350,3 +350,14 @@ pub fn execute_git_commit(message: &str) -> Result<std::process::ExitStatus> {
 
     Ok(result)
 }
+
+/// Executes a git push command to the current branch
+pub fn execute_git_push() -> Result<std::process::ExitStatus> {
+    let result = Command::new("git")
+        .args(["push"])
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .status()?;
+
+    Ok(result)
+}

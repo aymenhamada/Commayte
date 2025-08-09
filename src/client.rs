@@ -11,7 +11,7 @@ use crate::terminal;
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-pub fn run(use_emoji: bool) -> Result<()> {
+pub fn run(use_emoji: bool, push: bool) -> Result<()> {
     terminal::clear_terminal();
     let configuration = config::load_config();
 
@@ -165,12 +165,52 @@ pub fn run(use_emoji: bool) -> Result<()> {
             Ok(status) if status.success() => {
                 println!("{}", "✅ Commit successful!".bold().green());
                 println!("📄 Message: {}", final_message.white());
+                
+                if push {
+                    println!("🚀 Pushing to current branch...");
+                    let mut push_sp = terminal::show_spinner("Pushing changes...");
+                    let push_result = git::execute_git_push();
+                    push_sp.stop();
+                    
+                    match push_result {
+                        Ok(status) if status.success() => {
+                            println!("{}", "✅ Push successful!".bold().green());
+                        }
+                        Ok(status) => {
+                            println!("{}", "⚠️ Push completed with warnings.".yellow());
+                            println!("🔍 Exit code: {}", status.code().unwrap_or(-1));
+                        }
+                        Err(_) => {
+                            println!("{}", "❌ Git push failed.".bold().red());
+                        }
+                    }
+                }
                 break;
             }
             Ok(status) => {
                 println!("{}", "⚠️ Commit completed with warnings.".yellow());
                 println!("📄 Message: {}", final_message.white());
                 println!("🔍 Exit code: {}", status.code().unwrap_or(-1));
+                
+                if push {
+                    println!("🚀 Pushing to current branch...");
+                    let mut push_sp = terminal::show_spinner("Pushing changes...");
+                    let push_result = git::execute_git_push();
+                    push_sp.stop();
+                    
+                    match push_result {
+                        Ok(status) if status.success() => {
+                            println!("{}", "✅ Push successful!".bold().green());
+                        }
+                        Ok(status) => {
+                            println!("{}", "⚠️ Push completed with warnings.".yellow());
+                            println!("🔍 Exit code: {}", status.code().unwrap_or(-1));
+                        }
+                        Err(_) => {
+                            println!("{}", "❌ Git push failed.".bold().red());
+                        }
+                    }
+                }
                 break;
             }
             Err(_) => {

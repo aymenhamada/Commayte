@@ -19,6 +19,10 @@ struct Cli {
     #[arg(long)]
     emoji: bool,
 
+    /// Push to the current branch after committing
+    #[arg(short)]
+    push: bool,
+
     #[command(subcommand)]
     command: Option<Commands>,
 }
@@ -64,7 +68,7 @@ fn main() -> anyhow::Result<()> {
         }
         None => {
             // Default behavior - run the commit message generator
-            client::run(cli.emoji)?;
+            client::run(cli.emoji, cli.push)?;
         }
     }
 
